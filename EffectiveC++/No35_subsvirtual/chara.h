@@ -60,10 +60,11 @@ int default_health(const character2& gc){
 
 class badguy:public character2{
 public:
-	explicit badguy(std::string str="", healthcalfunc hcf=default_health, int rawval=100)
-		:character2(hcf,rawval)//子类fish的构造函数中，加上一个冒号(:)，然后加上父类的带参构造函数，这就是父类构造函数的显式调用
+	explicit badguy(healthcalfunc hcf=default_health, int rawval=100, std::string str="")
+		:character2(hcf,rawval),//子类fish的构造函数中，加上一个冒号(:)，然后加上父类的带参构造函数，这就是父类构造函数的显式调用
+		sname(str)
 	{
-		sname(str);
+		this->sname=str;
 	}
 	string& getname(){
 		return sname;
