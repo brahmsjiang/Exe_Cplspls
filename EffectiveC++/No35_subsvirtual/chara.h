@@ -151,6 +151,10 @@ public:
 	void sethealthfunc(healthcal* phc){
 		ptr_hc=phc;
 	}
+	virtual string& getname(){
+		std::string tmp;
+		return tmp;
+	}
 private:
 	int rawhealthval;
 	healthcal* ptr_hc;

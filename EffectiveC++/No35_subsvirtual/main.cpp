@@ -83,8 +83,11 @@ int main(int argc, char* argv[])
 	auto func2=std::bind(bindfunc,placeholders::_2,100,placeholders::_1);	//for normalfunc,both &normalfunc and normalfunc is allowed
 	func2(200,300);
 	////////////////////////////////////////////
-	//
-	
+	healthcal* funcptr=new badguy_healthcal();
+	character4* objptr=new char4_guy0(funcptr,10,"c++");
+	cout<<"name: "<<objptr->getname()<<endl;
+	cout<<"health val: "<<objptr->healthval()<<endl;
+
 	return 0;
 
 }
