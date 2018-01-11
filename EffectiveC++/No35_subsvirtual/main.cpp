@@ -41,6 +41,20 @@ int bindfunc(int p1,int p2, int p3){
 	cout<<"P3: "<<p3<<endl;
 }
 
+class A{
+public:
+	A(int xval=2, int yval=3)
+		:x(xval),y(yval)
+	{
+	}
+	void printXY(){
+		//cout<<x<<endl<<y<<endl;	//also can use member val directly
+		cout<<this->x<<endl<<this->y<<endl;
+	}
+private:
+	int x,y;
+};
+
 int main(int argc, char* argv[])
 {
 	character1* cp=new beggar1();
@@ -73,21 +87,25 @@ int main(int argc, char* argv[])
 	cout<<"functor call: "<<plhealth1()(killer1)<<endl;//funcrot with para mustbe called as"functor()(xxxx)"
 	
 	gamelevel curlevel;
-	auto func=std::bind(&gamelevel::plhealth2,curlevel,placeholders::_1);//std::bind parameter==>&class::func,obj,bandpar,placeholder
+	auto func=std::bind(&gamelevel::plhealth2,&curlevel,placeholders::_1);//std::bind parameter==>&class::func,obj,bandpar,placeholder
 	evilbadguy killer2(func,1000,"myself");
 	cout<<"name: "<<killer2.getname()<<endl;
+	for(long i=99999999*4;i>=0;i--){
+	}
 	cout<<"health val: "<<killer2.healthval()<<endl<<endl;
 	/////////////////////////////////////////////	
-	auto func1=std::bind(&bindfunc,1,2,3);
+	auto func1=std::bind(bindfunc,1,2,3);
 	func1();
-	auto func2=std::bind(bindfunc,placeholders::_2,100,placeholders::_1);	//for normalfunc,both &normalfunc and normalfunc is allowed
+	auto func2=std::bind(&bindfunc,placeholders::_2,100,placeholders::_1);	//for normalfunc,both &normalfunc and normalfunc is allowed
 	func2(200,300);
 	////////////////////////////////////////////
 	healthcal* funcptr=new badguy_healthcal();
-	character4* objptr=new char4_guy0(funcptr,10,"c++");
+	character4* objptr=new char4_guy0(funcptr,10,"cplspls");
 	cout<<"name: "<<objptr->getname()<<endl;
 	cout<<"health val: "<<objptr->healthval()<<endl;
 
+	A aa;
+	aa.printXY();
 	return 0;
 
 }
