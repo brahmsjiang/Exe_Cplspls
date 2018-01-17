@@ -1,22 +1,38 @@
 #include <iostream>
 #include "widget.h"
+//#pragma pack(1)
 
 using namespace std;
-	class person{
+class person{
+
+};
+class student:private person{
+	operator person(){
 
 	};
-	class student:private person{
-		operator person(){
 
-		};
+};
+void eat(const person& p){
 
-	};
-	void eat(const person& p){
+};
+void study(const student& s){
 
-	};
-	void study(const student& s){
+};
 
-	};
+class empty{
+
+};
+
+class holdaint1{
+private:
+	int x;
+	empty obj;
+};
+
+class holdaint2:private empty{
+private:
+	int x;
+};
 
 int main(int argc, char* argv[])
 {
@@ -27,19 +43,15 @@ int main(int argc, char* argv[])
 	//study(p);//err  father cannot convert child
 	study(s);
 	//////////////////////////
-	widget* dd=new spwidget();
-	dd->gettimer().ontick();
+	widget* dd=new widget();
+	dd->timertick();
 
-	widget ddd;
-	ddd.gettimer().ontick();
+//	widget ddd;
+//	ddd.gettimer().ontick();
 
-	spwidget dddd;
-	dddd.ontick();
-	//////////////////////////
-	A a;a.printA();
-	AA aa;aa.callprintA();	
-
-	A* ap=new AA();
-	ap->callprintA();
+	cout<<"sizeof(int): "<<sizeof(int)<<endl;
+	cout<<"sizeof(empty): "<<sizeof(empty)<<endl;
+	cout<<"sizeof(holdaint1): "<<sizeof(holdaint1)<<endl;
+	cout<<"sizeof(holdaint2): "<<sizeof(holdaint2)<<endl;
 	return 0;
 }
