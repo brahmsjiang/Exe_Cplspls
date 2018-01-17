@@ -152,8 +152,8 @@ public:
 		ptr_hc=phc;
 	}
 	virtual string& getname(){
-		std::string tmp;
-		return tmp;
+		string aa;
+		return aa;
 	}
 private:
 	int rawhealthval;

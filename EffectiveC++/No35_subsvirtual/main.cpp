@@ -62,6 +62,9 @@ int main(int argc, char* argv[])
 	
 	cp=new character1();
 	cp->healthval();
+
+	beggar1 xxxx;
+	xxxx.healthval();
 	//////////////////////////////////////////////
 	//badguy boss0;// default construct should not add boss0(), complier will regard it as a pointer initialization====>error: request for member '*' in '*', which is of non-class type '*'
 	std::string name="yugaoqiang";

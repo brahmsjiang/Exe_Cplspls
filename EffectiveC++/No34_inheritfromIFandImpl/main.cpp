@@ -15,8 +15,14 @@ int main(){
 	airport port0("shanghai");
 	kongke plane0("kongke_p0");
 	boyin plane1("boyin_p1");
+	//airplane pa("dd");	//airplane is still a abstract class
 	plane0.fly(port0);
 	plane1.fly(port0);
+
+	derivedA0 a0;
+	a0.print();
+	derivedA1 a1;
+	a1.print();
 	return 0;
 }
 

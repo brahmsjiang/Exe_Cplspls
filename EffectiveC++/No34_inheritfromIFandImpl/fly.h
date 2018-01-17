@@ -60,6 +60,44 @@ public:
 	}
 	virtual void fly(const airport& dest)
 	{
-		cout<<this->name()<<" fly to "<<dest.name()<<endl;
+		cout<<this->name()<<" fly from "<<dest.name()<<endl;
 	}
 };
+
+class baseA{
+public:
+	virtual void print()=0;
+protected:
+	void defaultprint(){
+		cout<<"print baseA"<<endl;
+	}
+};
+
+class derivedA0:public baseA{
+public:
+	virtual void print(){
+		defaultprint();
+	}
+};
+
+class derivedA1:public baseA{
+public:
+	virtual void print(){
+		cout<<"print derivedA1"<<endl;
+	}
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
