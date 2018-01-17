@@ -34,5 +34,5 @@ void timer::ontick()
 
 void widgettimer::ontick()
 {
-	cout<<"on widget !dddeeeeeeeeedk!!!!!"<<endl;
+	cout<<"on widgetdddd !!!!"<<endl;
 }
