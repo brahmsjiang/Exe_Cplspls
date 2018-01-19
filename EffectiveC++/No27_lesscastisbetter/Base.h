@@ -9,14 +9,26 @@
 using namespace std;
 
 class Base{
-virtual void print(){
-	
-}
+public:
+	Base():i(0),j(0){
+
+	}
+	virtual void print(){
+	}
+	virtual void setnum(int ii){
+		i=ii;
+	}
+int i,j;
 };
 
 
 
 class Derived:public Base{
-
+public:
+	virtual void setnum(int ii,int jj){
+		//static_cast<Base>(*this).setnum(ii);	//static_cast return a copy
+		Base::setnum(ii);
+		j=jj;
+	}
 };
 

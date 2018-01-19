@@ -117,6 +117,15 @@ void statictest()
 	cout<<(*tmmpp = 10)<<endl;
 	int* opop=0;
 	//*opop=10;	//core dump, is the same
+	//
+	int n = static_cast<int>(3.14); 
+	std::cout << "n = " << n << '\n';
+	std::vector<int> v = static_cast<std::vector<int>>(10);
+	std::cout << "v.size() = " << v.size() << '\n';
+
+	Derived dd;
+	dd.setnum(2,3);
+	cout<<"dd i: "<<dd.i<<"	dd j: "<<dd.j<<endl;
 }
 
 int main()
