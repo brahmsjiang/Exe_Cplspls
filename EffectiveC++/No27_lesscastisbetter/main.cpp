@@ -9,7 +9,7 @@
 #include<typeinfo>
 #include<vector>
 #include<memory>	//sharedptr
-
+#include "Base.h"
 using namespace std;
 
 class father{
@@ -56,6 +56,9 @@ public:
 	}
 	virtual void act(){
 	}
+	void hitgrandfather(){
+		cout<<"hit grand father"<<endl;
+	}
 	virtual ~grandson(){
 		cout<<"grandson des"<<endl;
 	}
@@ -66,6 +69,7 @@ public:
 	virtual void clear(){	//dynamic_cast require virtual func==>its a polymorphic class
 		cout<<"clear window."<<endl;
 	}
+	virtual void blink(){}	//add virtual,avoid dynamic_cast
 };
 class spwindow:public window{
 public:
@@ -73,6 +77,47 @@ public:
 		cout<<"spwindow, blink!"<<endl;
 	}
 };
+
+class widget{
+public:
+	explicit widget(int i):size(i){
+
+	}
+	int size;
+};
+
+void dosomething(const widget& w){
+	cout<<"widget size: "<<w.size<<endl;
+}
+
+void statictest()
+{
+	father fa;
+	child ch;
+	if(auto ttpp = static_cast<grandson*>(&fa)){
+			cout<<"shit! ";ttpp->hitgrandfather();	//downcast
+	}
+	else{
+		cout<<"static_cast pointer null"<<endl;
+	}
+	cout<<"shit!! ";static_cast<grandson&>(ch).hitgrandfather();
+	grandson gss;
+	static_cast<father&>(gss).seti(22);	//upcast
+	cout<<"shit!!! i: "<<gss.i<<endl;
+
+	int pppp=9;
+	void* nonptr=&pppp;
+	//cout<<"*nonptr: "<<*nonptr<<endl;	//err,  ‘void*’ is not a pointer-to-object type
+	cout<<*static_cast<int*>(nonptr)<<endl;
+	//*nonptr=11;	//err, nonptr's type is still void*
+	void* non=0;
+	int* tmmpp = static_cast<int*>(non);	//void* to others
+	//*tmmpp=10;	//core dump, pointer 0 cannot be set val, it must be point at others before
+	tmmpp = &pppp;
+	cout<<(*tmmpp = 10)<<endl;
+	int* opop=0;
+	//*opop=10;	//core dump, is the same
+}
 
 int main()
 {
@@ -90,24 +135,85 @@ int main()
 	const_cast<child&>(cs).seti(8);	//const_cast wont call copycons func
 	cout<<"i: "<<cs.i<<endl;
 	}
-	cout<<"==========================="<<endl;	
+	cout<<"==========================="<<endl;
+	{
 	typedef std::vector<std::shared_ptr<window>> VPW;
 	VPW winptrs;
-	VPW
-	
+	//insert
+	for(int i=0;i<4;i++){
+		std::shared_ptr<window> ptr1(new spwindow());
+		winptrs.push_back(ptr1);
+	}
+	//display
 	for(VPW::iterator iter = winptrs.begin();iter!=winptrs.end();++iter){
 		//window * pw=iter->get();
 		if(spwindow* psw = dynamic_cast<spwindow*>((iter)->get())){
 			psw->blink();
 		}
 	}
-
-
+	}
+	//////////////////////////////////////////////////////
+	cout<<"==========================="<<endl;
+	{
+	typedef std::vector<std::shared_ptr<spwindow>> VSPW;
+	VSPW winptrs;
+	for(int i=0;i<3;i++){
+		std::shared_ptr<spwindow> ptr1(new spwindow());
+		winptrs.push_back(ptr1);
+	}
+	for(VSPW::iterator iter = winptrs.begin();iter!=winptrs.end();++iter){
+		(*iter)->blink();
+	}
+	}
+	cout<<"==========================="<<endl;
+	{
+	typedef std::vector<std::shared_ptr<window>> VPW;
+	VPW winptrs;
+	for(int i=0;i<2;i++){
+		std::shared_ptr<window> ptr1(new spwindow());
+		winptrs.push_back(ptr1);
+	}
+	for(VPW::iterator iter = winptrs.begin();iter!=winptrs.end();++iter){
+		(*iter)->blink();
+	}
+	}
 
 	cout<<"==========================="<<endl;	
+	dosomething(widget(5));
+	dosomething(static_cast<widget>(25));
+	//dosomething(25);	//err,explicit
+	cout<<"==========================="<<endl;	
+	{
+		int gs=4;
+		const_cast<int&>(gs)=5;	//ok
+		static_cast<int&>(gs)=6;	//ok
+		//static_cast<const int&>(gs)=7;	//err,const var cannot be set
+		father fa;
+		child ch;
+		try{
+			auto ttpp = dynamic_cast<grandson&>(fa);
+			ttpp.hitgrandfather();
+		}
+		catch(std::bad_cast& tt){
+			cout<<"dynamic_cast bad"<<endl;
+		}
+		if(auto ttpp = dynamic_cast<grandson*>(&ch)){
+			ttpp->hitgrandfather();
+		}
+		else{
+			cout<<"dynamic_cast pointer null"<<endl;
+		}
+		
+	}
+	cout<<"==========================="<<endl;	
+	statictest();	
+	cout<<"==========================="<<endl;	
+	{
+
 
 	const child cs;	
 	static_cast<father>(cs);	//static_cast will call copycons func
+	}
 #if 0
 	father* bptr = new grandson();
 	cout<<"typeof bptr is: "<<typeid(bptr).name()<<endl;
