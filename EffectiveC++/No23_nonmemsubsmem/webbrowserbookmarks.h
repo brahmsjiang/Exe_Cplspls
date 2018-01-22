@@ -1,0 +1,14 @@
+/*************************************************************************
+    > File Name: webbrowserbookmarks.h
+    > Author: ma6174
+    > Mail: ma6174@163.com 
+    > Created Time: 2018年01月22日 星期一 10时04分06秒
+ ************************************************************************/
+
+#include<iostream>
+using namespace std;
+
+namespace WebBrowserStuff{
+
+
+}
