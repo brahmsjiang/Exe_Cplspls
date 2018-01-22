@@ -10,12 +10,19 @@
 #include<vector>
 #include<memory>	//sharedptr
 #include "Base.h"
+
+#define static_cast(TYPE,EXPR) ((TYPE)(EXPR))
+#define const_cast(TYPE,EXPR) ((TYPE)(EXPR))
+#define reinterpret_cast(TYPE,EXPR) ((TYPE)(EXPR))
+#define dynamic_cast(TYPE,EXPR) ((TYPE)(EXPR))
+
 using namespace std;
+
 
 class father{
 public:
 	father()
-		:i(0),j(1)
+		:i(0),j(0)
 	{
 		cout<<"father cons"<<endl;
 	}
@@ -128,22 +135,42 @@ void statictest()
 	cout<<"dd i: "<<dd.i<<"	dd j: "<<dd.j<<endl;
 }
 
+int dosomething(){cout<<"do some thing"<<endl;}
+
+void reinterpret_test()
+{
+	int dosomething();
+	typedef void (*funcptr)();
+	funcptr funcptrary[10];
+	funcptrary[0]=reinterpret_cast<funcptr>(&dosomething);	//dosomething is also right
+	funcptrary[1]=(funcptr)dosomething;	//dosomething is also right
+	//funcptrary[0]=dosomething;	//err
+	funcptrary[0]();	//call func must use ()
+	funcptrary[1]();
+}
+
+class A{
+public:
+	A():i(0){}
+	const int i;	
+};
+
+void const_test()
+{
+	
+	cout<<"aa_r.i "<<aa_r.i<<endl;
+	cout<<"aa.i "<<aa.i<<endl;
+
+	const int j = 3; // j is declared const
+	int jj = const_cast<int&>(j) = 5;         // undefined behavior!
+	cout<<"j: "<<j<<"	jj: "<<jj<<endl;
+
+}
+
 int main()
 {
-	//const father bs;
-	//const_cast<father&>(bs);	//pointer, reference, or a pointer-to-data-member type
-	
-	{
-	const child cs;
-	//cs.i=6;	//err, readonly var cannot be set
-	//cs.j=6;	//err, const obj cannot be varified
-	const_cast<child&>(cs).j=6;
-	cout<<"i: "<<cs.i<<"	j: "<<cs.j<<endl;
-	const_cast<child*>(&cs)->seti(7);	//const_cast is used between pointer or reference
-	cout<<"i: "<<cs.i<<endl;
-	const_cast<child&>(cs).seti(8);	//const_cast wont call copycons func
-	cout<<"i: "<<cs.i<<endl;
-	}
+	reinterpret_test();
+	const_test();	
 	cout<<"==========================="<<endl;
 	{
 	typedef std::vector<std::shared_ptr<window>> VPW;

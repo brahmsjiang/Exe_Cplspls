@@ -16,7 +16,7 @@ public:
 	}
 }myex;
 
-std::string encryptPswd(const std::string& pswd)
+std::string encryptPswd(const std::string& pswd) //throw()
 {
 	if(pswd.length() < minpasswd){
 		throw logic_error("encrpt err");
@@ -43,24 +43,18 @@ void try_catch()
 	catch(const std::string& str){
 		cout<<__LINE__<<" "<<str<<endl;
 	}
-	try{
-		//int a=1/0; 
-	}
-	catch(...){
-		//cout<<__LINE__<<" "<<ex.what()<<endl;
-		cout<<__LINE__<<endl;
-	}
 
 }
 int main()
 {
+	try_catch();
 	try{
 		std::string pswd1("1234");
 		cout<<"encrypted pswd: "<<encryptPswd(pswd1)<<endl;
 	}
-	catch(myexp& ex){
+	catch(std::exception& ex){
 		cout<<__LINE__<<" "<<ex.what()<<endl;
-		cout<<"myexception is catched"<<endl;
+		cout<<"logic_err is catched"<<endl;
 	}
 	
 	return 0;
