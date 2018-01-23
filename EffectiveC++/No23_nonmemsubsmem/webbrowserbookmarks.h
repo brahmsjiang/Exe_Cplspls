@@ -10,5 +10,7 @@ using namespace std;
 
 namespace WebBrowserStuff{
 
+class WebBrowser;
+void clear_Bookmarks(WebBrowser& wb); 
 
 }

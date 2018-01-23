@@ -21,7 +21,7 @@ public:
 };
 
 void clearBrowser(WebBrowser& wb);
-
+	
 }
 
 #endif

@@ -6,10 +6,12 @@
  ************************************************************************/
 
 #include<iostream>
-#include
+
 using namespace std;
 
 namespace WebBrowserStuff{
-void clear_Cookies(WebBrowser* wb);
+
+class WebBrowser;
+void clear_Cookies(WebBrowser& wb);
 
 }

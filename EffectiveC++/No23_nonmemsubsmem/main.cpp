@@ -6,9 +6,9 @@
  ************************************************************************/
 
 #include<iostream>
-#include "webbrowser.h"
-//#include "webbrowserbookmarks.h"
+#include "webbrowserbookmarks.h"
 #include "webbrowsercookies.h"
+#include "webbrowser.h"
 
 using namespace std;
 using namespace WebBrowserStuff;
@@ -16,8 +16,8 @@ using namespace WebBrowserStuff;
 int main()
 {
 
-	WebBrowser wbs;
-	::clear_Cookies(&wbs);
+//	WebBrowser wbs;
+//	clear_Cookies(wbs);
 
 	return 0;
 }
