@@ -133,6 +133,9 @@ void statictest()
 	Derived dd;
 	dd.setnum(2,3);
 	cout<<"dd i: "<<dd.i<<"	dd j: "<<dd.j<<endl;
+
+	const child cs;	
+	static_cast<father>(cs);	//static_cast will call copycons func
 }
 
 int dosomething(){cout<<"do some thing"<<endl;}
@@ -149,29 +152,8 @@ void reinterpret_test()
 	funcptrary[1]();
 }
 
-class A{
-public:
-	A():i(0){}
-	const int i;	
-};
-
-void const_test()
+void dynamic_test()
 {
-	
-	cout<<"aa_r.i "<<aa_r.i<<endl;
-	cout<<"aa.i "<<aa.i<<endl;
-
-	const int j = 3; // j is declared const
-	int jj = const_cast<int&>(j) = 5;         // undefined behavior!
-	cout<<"j: "<<j<<"	jj: "<<jj<<endl;
-
-}
-
-int main()
-{
-	reinterpret_test();
-	const_test();	
-	cout<<"==========================="<<endl;
 	{
 	typedef std::vector<std::shared_ptr<window>> VPW;
 	VPW winptrs;
@@ -188,8 +170,7 @@ int main()
 		}
 	}
 	}
-	//////////////////////////////////////////////////////
-	cout<<"==========================="<<endl;
+	cout<<"dynamic_test==========================="<<endl;
 	{
 	typedef std::vector<std::shared_ptr<spwindow>> VSPW;
 	VSPW winptrs;
@@ -201,24 +182,7 @@ int main()
 		(*iter)->blink();
 	}
 	}
-	cout<<"==========================="<<endl;
-	{
-	typedef std::vector<std::shared_ptr<window>> VPW;
-	VPW winptrs;
-	for(int i=0;i<2;i++){
-		std::shared_ptr<window> ptr1(new spwindow());
-		winptrs.push_back(ptr1);
-	}
-	for(VPW::iterator iter = winptrs.begin();iter!=winptrs.end();++iter){
-		(*iter)->blink();
-	}
-	}
-
-	cout<<"==========================="<<endl;	
-	dosomething(widget(5));
-	dosomething(static_cast<widget>(25));
-	//dosomething(25);	//err,explicit
-	cout<<"==========================="<<endl;	
+	cout<<"dynamic_test==========================="<<endl;
 	{
 		int gs=4;
 		const_cast<int&>(gs)=5;	//ok
@@ -241,15 +205,67 @@ int main()
 		}
 		
 	}
-	cout<<"==========================="<<endl;	
-	statictest();	
-	cout<<"==========================="<<endl;	
-	{
+	
+}
 
 
-	const child cs;	
-	static_cast<father>(cs);	//static_cast will call copycons func
-	}
+
+void const_test()
+{
+	const int const_i = 66;	//const only conver quote or pointer
+	const int& ref_const_i = const_i;
+	const_cast<int&>(ref_const_i) = 100;
+	cout<<"const i: "<<const_i<<"	ref_const_i: "<<ref_const_i<<endl;
+
+	int i = 66;
+	const int& ref_i = i;
+	const_cast<int&>(ref_i) = 100;
+	cout<<"i: "<<i<<"	ref_i: "<<ref_i<<endl;
+
+	int input;	//const cannot be optimize by compiler
+	cout<<"please input a integer:";
+	cin>>input;
+	const int ii = input;
+	int &ref_ii = const_cast<int&>(ii);
+	ref_ii++;
+	cout<<"ii: "<<ii<<"	ref_ii: "<<ref_ii<<endl;
+
+	const int iii= 77;	//const can be optimize by compiler
+	int &ref_iii= const_cast<int&>(iii);
+	ref_iii++;
+	cout<<"iii: "<<iii<<"	ref_iii: "<<ref_iii<<endl;
+	
+	const int j = 77; //Modify const object through a non-const access path results in undefined behavior.
+	int jj = const_cast<int&>(j)=78;// undefined behavior!
+	cout<<"j: "<<j<<"	jj: "<<jj<<endl;
+
+	class A{
+	public:
+		A():i(0){}
+		int i;	
+	};
+	const A a;
+	int ref_ai = const_cast<int&>(a.i)=8;
+	cout<<"a.i: "<<a.i<<"	ref_ai: "<<ref_ai<<endl;
+
+	
+	
+}
+
+int main()
+{
+	//reinterpret_test();
+	const_test();
+	//dynamic_test();
+
+	cout<<"==========================="<<endl;	
+	dosomething(widget(5));
+	dosomething(static_cast<widget>(25));
+	//dosomething(25);	//err,explicit
+
+	cout<<"==========================="<<endl;	
+	//statictest();	
+	cout<<"==========================="<<endl;	
 #if 0
 	father* bptr = new grandson();
 	cout<<"typeof bptr is: "<<typeid(bptr).name()<<endl;
