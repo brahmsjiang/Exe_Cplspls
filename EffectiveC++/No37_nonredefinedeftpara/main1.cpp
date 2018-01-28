@@ -43,7 +43,7 @@ private:
 
 class circle:public shape{
 private:
-	virtual void dodraw(shapecolor col) const{	//when user call draw,para have to be set
+	virtual void dodraw(shapecolor col) const{
 		cout<<"circle::draw "<<retcol(col)<<endl;
 	}
 };
@@ -56,6 +56,7 @@ int main()
 	circle cir;
 	shape* ptr=&cir;
 	ptr->draw();
+	ptr->draw(shape::Green);
 	
 	return 0;
 }

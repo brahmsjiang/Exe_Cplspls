@@ -27,7 +27,7 @@ public:
 	{
 		cout<<"point copy"<<endl;
 	}
-	point& operator=(const point& pt)	//default复制构造函数单纯地将来源对象的每一个非static成员拷贝到目标对象
+	point& operator=(const point& pt)	//default复制构造函数将来源对象的每一个非static成员拷贝到目标对象
 	{
 		cout<<"point operator="<<endl;
 		this->x=pt.x;
@@ -88,8 +88,8 @@ public:
 		cout<<"rect cons"<<endl;
 	}
 	rect(const rect& re)
-	//	:dptr(new rectdata(*re.dptr))	//deap copy
-		:dptr(re.dptr)	//shallow copy
+		:dptr(new rectdata(*re.dptr))	//deap copy
+	//	:dptr(re.dptr)	//shallow copy
 	{
 			
 		cout<<"rect copy"<<endl;
@@ -103,11 +103,8 @@ public:
 	}
 	~rect()
 	{
-	//	if(NULL!=dptr){
-	//		delete dptr;
-	//		dptr=NULL;
-	//	}
-		cout<<"~rect"<<endl;
+		//cout<<"~rect"<<endl;
+		//delete dptr;
 	}
 
 public:
@@ -123,14 +120,6 @@ const rect boundbox()
 
 int main()
 {
-	point a(2,2),b;
-	rectdata recd(a,b);
-	spaceline();
-	
-	rectdata redd1;
-	redd1=recd;	
-	spaceline();	
-
 	rect* ptr=new rect(new rectdata());
 	rect rect1(*ptr);
 	cout<<"ptr addr: "<<(*ptr).dptr<<endl;
@@ -143,8 +132,6 @@ int main()
 	cout<<"rd: ";rect1.retrightdown().printp();
 	//rect1.retleftup().setx(1000);	//err,retleftup is const
 		
-	spaceline();	
-	boundbox().retleftup().printp();
 	spaceline();	
 	const point* pgo=&(boundbox().retleftup());	//ret handle is null when this statement is end,the obj will destory
 	pgo->printp();
