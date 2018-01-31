@@ -28,16 +28,48 @@ void print2nd(const C& container)
 }
 
 template<typename C>
-void func0(const C& container, C::iterator iter)	//1st para cannot add typename, 2st para must add typename
+void func0(const C& container, typename C::const_iterator iter)	//1st para cannot add typename, 2st para must add typename
 {
-
+	if(container.size() >= 2){
+		iter = container.begin();
+		++iter;
+		int val = *iter;
+		cout<<val<<endl;
+	}
 }
+
+template<typename T>
+class Base<T>
+{
+	struct Nested{
+
+	}
+
+};
+
+template<typename T>
+class Derived:public Base<T>::Nested {
+public:
+	explicit Derived(int x)
+		:Base<T>Nested(x)
+	{
+		typename Base<T>::Nested temp;
+	}
+};
 
 int main()
 {
 	vector<int> vi0(10,5);
-	vector<int> vi1(10);
 	print2nd(vi0);
-	print2nd(vi1);
+
+	vector<int> vi1(5,4);
+	vector<int>::iterator iter1=vi1.begin();
+	//vector<int>::iterator iter1;
+	func0(vi1,iter1);
 	return 0;
 }
+
+
+
+
+
