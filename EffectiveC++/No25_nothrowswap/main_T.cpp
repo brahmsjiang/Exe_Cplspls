@@ -7,7 +7,6 @@
 
 #include<iostream>
 #include<vector>
-using namespace std;
 
 namespace widgetstuff{
 
@@ -21,6 +20,8 @@ public:
 		:a(vara),v(varv){}
 	void printimpl()
 	{
+		using std::cout;
+		using std::endl;
 		cout<<"a: "<<a<<"	v: ";
 		for(typename TD::iterator it=v.begin();it!=v.end();++it)	//need 'typename' before *** because *** is a dependent scope, add 'typename'
 		{
@@ -52,12 +53,15 @@ public:
 		*(pimpl)=*(rhs.pimpl);
 		return *this;
 	}
+#if 0
 	void swap(widget& other)
 	{
-		using std::swap;
+		using std::cout;
+		using std::endl;
 		cout<<"swaping..."<<endl;
-		swap(pimpl, other.pimpl);
+		std::swap(pimpl, other.pimpl);
 	}
+#endif
 	void printimpl()
 	{
 		if(pimpl)	pimpl->printimpl();
@@ -75,27 +79,25 @@ private:
 #if 0
 namespace std{
 template<typename T>
-//void swap<widget<T>>(widget<T>& a, widget<T>& b)	//err,partially specialize only can be on class template not on function template
+void swap<widget<T>>(widget<T>& a, widget<T>& b)	
+//err,partially specialize only can be on class template not on function template
 void swap(widget<T>& a, widget<T>& b)	//a overload version simply
-{
-	a.swap(b);
-}
+{a.swap(b);}
 
 }
-#endif
 
 template<typename T>
 void swap(widget<T>& a,widget<T>& b)
 {
 	a.swap(b);
 }
-
+#endif
 }
 
 template<typename T>
 void dosomething(T& obj1, T& obj2)
 {
-	using std::swap;
+//	using std::swap;
 	swap(obj1, obj2);
 }
 
@@ -108,12 +110,16 @@ int main()
 	widgetimpl<std::string> wi1(777,std::vector<std::string>(4,"GG"));	
 	widget<std::string> wg1(&wi1);
 	
-	cout<<"wg0 ";wg0.printimpl();	
-	cout<<"wg1 ";wg1.printimpl();
+	std::cout<<"wg0 ";wg0.printimpl();	
+	std::cout<<"wg1 ";wg1.printimpl();
 	
-	wg1.swap(wg0);
-	cout<<"wg0 ";wg0.printimpl();	
-	cout<<"wg1 ";wg1.printimpl();
+	//swap(wg1,wg0);
+	dosomething(wg1,wg0);
+	std::cout<<"wg0 ";wg0.printimpl();	
+	std::cout<<"wg1 ";wg1.printimpl();
+	
+	std::cout<<"================="<<std::endl;
+
 
 	return 0;
 }

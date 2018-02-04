@@ -63,11 +63,13 @@ public:
 	{
 
 	}
+#if 0
 	WidgetSp(int num)
 		:sname("default"), smem(Mem(num))	//it only canbe convert once, int->Mem->WidgerSp is prohibit
 	{
 
 	}
+#endif
 	virtual ~WidgetSp(){
 
 	}
