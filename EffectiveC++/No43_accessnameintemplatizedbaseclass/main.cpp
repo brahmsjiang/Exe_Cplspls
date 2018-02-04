@@ -98,6 +98,11 @@ template<>	//total template specialization
 class MsgSender<CompanyZ>
 {
 public:
+#if 0
+	void sendClear(const MsgInfo& info){
+		cout<<"CompanyZ don't suppprt sendclr!"<<endl;
+	}
+#endif
 	void sendSecret(const MsgInfo& info){
 		std::string msg;
 		msg = info.createMsg(MsgInfo::ENC);
@@ -110,12 +115,12 @@ template<typename Company>
 class LoggingMsgSender:public MsgSender<Company>
 {
 public:
-	//using MsgSender<Company>::sendClear; 	//2nd. tell compiler to fine in base class scope
+	using MsgSender<Company>::sendClear; 	//2nd. tell compiler to find in base class scope
 	void sendClearMsg(const MsgInfo& info){
 		cout<<"logging start"<<endl;
 		//sendClear(info);	//err,compiler doesnt know MsgSender<company> whether has thisfunc or not
-		this->sendClear(info);	//1st, assume sendclear will be inheritted
-		//sendClear(info);	//2nd
+		//this->sendClear(info);	//1st, assume sendclear will be inheritted
+		sendClear(info);	//2nd
 		//MsgSender<Company>::sendClear(info);//3rd,not good,if func is virtual,is will close virtual function
 		cout<<"logging end"<<endl;
 	}
@@ -142,12 +147,13 @@ int main()
 	MsgSender<CompanyZ> sendz;
 	MsgInfo mz("RRRR");
 	//sendz.sendClear(mz);	//err
+	sendz.sendSecret(mz);	//ok
 	
 	LoggingMsgSender<CompanyA> logsenda;
 	MsgInfo lma("lma");
 	logsenda.sendClearMsg(lma);
 
-	LoggingMsgSender<CompanyZ> logsendz;//2nd will err, using...
+	LoggingMsgSender<CompanyB> logsendz;//2nd will err, using...
 	MsgInfo lmz("lmz");
 	//logsendz.sendClearMsg(lmz);	//err whichever method is used
 	logsendz.sendSecret(lmz);
