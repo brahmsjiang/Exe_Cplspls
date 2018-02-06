@@ -4,18 +4,6 @@
 #include <iostream>
 using namespace std;
 
-class B;
-class A{
-public:
-	std::shared_ptr<B> pa; 
-};
-
-class B{
-public:
-	std::shared_ptr<A> pb; 
-};
-
-
 int main()
 {
 	//shared_ptr initialization
@@ -54,20 +42,6 @@ int main()
 	if(!pdata2)	cout<<"pdata2 is null"<<endl;
 	if(!pdata0.unique())	cout<<"there is more than one,num is:	"<<pdata0.use_count()<<endl;
 	else					cout<<"there is only one"<<endl;
-
-	//loop quote
-	{
-	//A* aptr = new A();
-	//B* bptr = new B();
-	std::shared_ptr<A> ptra(new A());
-	auto ptrb = std::make_shared<B>();	//B() is constructor, not new B()
-	//auto ptrb = std::make_shared<B>(B());	//B() is constructor, not new B()
-	ptra->pa = ptrb;
-	ptrb->pb = ptra;
-	cout<<"ptra:	"<<ptra<<"	"<<ptra.use_count()<<endl;
-	cout<<"ptrb:	"<<ptrb<<"	"<<ptrb.use_count()<<endl;
-	}
-	//cout<<"ptra count:	"<<ptra.use_count()<<endl;	//err,cannot find ptra by compiler
 	
 	return 0;
 }
