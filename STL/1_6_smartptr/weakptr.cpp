@@ -39,10 +39,11 @@ int main()
 	//loop quote
 	{
 	std::shared_ptr<A> ptra(new A());
-	auto ptrb = std::make_shared<B>();	//B() is constructor, not new B()
-	//auto ptrb = std::make_shared<B>(B());	//B() is constructor, not new B()
+	auto ptrb = std::make_shared<B>();	//() calls B constructor, not new B()
+	//auto ptrb = std::make_shared<B>(B());	//B() calls copy constructor, not new B()
 	ptra->pa = ptrb;
 	ptrb->pb = ptra;
+	*ptra->pa;	//admit
 	cout<<"ptra:	"<<ptra<<"	"<<ptra.use_count()<<endl;
 	cout<<"ptrb:	"<<ptrb<<"	"<<ptrb.use_count()<<endl;
 	ptra = nullptr;	//cannot res
@@ -53,16 +54,47 @@ int main()
 	cout<<"=========================="<<endl;
 	{
 	std::shared_ptr<AA> ptra(new AA());
-	auto ptrb = std::make_shared<BB>(BB());
+	auto ptrb = std::make_shared<BB>();
 	ptra->pa = ptrb;
 	ptrb->pb = ptra;
+	//*ptra->pa;	//weak not support *pointer
+	auto patmp(ptra->pa);	//weakptr copy
+	//*patmp;	//patmp is weak
+	
+	std::shared_ptr<BB> pashtp(patmp);	//through weakptr to create sharedptr
+	//std::shared_ptr<BB> pashtp=patmp;	//err, operator=
+	if(pashtp)	cout<<"shared ptr create success"<<endl;
+	else	cout<<"shared ptr create failed"<<endl;
+	std::shared_ptr<AA> pbshtp(ptrb->pb.lock());	//through weakptr to create sharedptr
+	if(pbshtp)	cout<<"shared ptr create success"<<endl;
+	else	cout<<"shared ptr create failed"<<endl;
+
 	cout<<"ptra:	"<<ptra<<"	"<<ptra.use_count()<<endl;
 	cout<<"ptrb:	"<<ptrb<<"	"<<ptrb.use_count()<<endl;
-	ptra = nullptr;	//cannot res
-	//ptrb.reset();	//cannot res
+	cout<<"pashtp:	"<<pashtp<<"	"<<pashtp.use_count()<<endl;
+	cout<<"pbshtp:	"<<pbshtp<<"	"<<pbshtp.use_count()<<endl;
+	ptra = nullptr;
 	cout<<"ptra:	"<<ptra<<"	"<<ptra.use_count()<<endl;
 	cout<<"ptrb:	"<<ptrb<<"	"<<ptrb.use_count()<<endl;
+	cout<<"pashtp:	"<<pashtp<<"	"<<pashtp.use_count()<<endl;
+	cout<<"pbshtp:	"<<pbshtp<<"	"<<pbshtp.use_count()<<endl;
+	ptrb.reset();
+	cout<<"ptra:	"<<ptra<<"	"<<ptra.use_count()<<endl;
+	cout<<"ptrb:	"<<ptrb<<"	"<<ptrb.use_count()<<endl;
+	cout<<"pashtp:	"<<pashtp<<"	"<<pashtp.use_count()<<endl;
+	cout<<"pbshtp:	"<<pbshtp<<"	"<<pbshtp.use_count()<<endl;
+	pashtp.reset();
+	pbshtp.reset();
+	if(ptra==nullptr)	cout<<"ptra is null"<<endl;
+	//if(ptra->pa==nullptr)	cout<<"ptra->pa is null"<<endl;	//err
+	if(patmp.expired())	cout<<"patmp's obj no longer exist"<<endl;
+	
+	std::shared_ptr<BB> pbthtp2(patmp.lock());
+	if(pbthtp2)	cout<<"shared ptr create success"<<endl;
+	else	cout<<"shared ptr create failed"<<endl;
+
 	}
+
 
 
 	return 0;
