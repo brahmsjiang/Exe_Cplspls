@@ -27,7 +27,7 @@ void sort_2(deque<T>& dq)
 	cout<<"map sort res: "<<endl;
 	auto it=mpp.begin();
 	for(;it!=mpp.end();++it){
-		cout<<it->first<<" "<<it->second;
+		cout<<it->first<<"~"<<it->second<<";";
 	}
 	cout<<endl;
 }
