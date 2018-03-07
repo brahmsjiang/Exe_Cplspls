@@ -8,7 +8,7 @@
 
 #ifdef DB_OBJECT
 #define DB_OBJECT
-#include<iostream>
+#include <iostream>
 #include <map>
 #define db_slots
 #define db_signals protected
