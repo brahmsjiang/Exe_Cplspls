@@ -19,19 +19,24 @@ void sort_2(deque<T>& dq)
 {
 	map<T,int> mpp;
 	int capa=dq.size();
-	cout<<"size of dq is: "<<capa<<endl;
 	for(int i=0;i<capa;++i){
-		mpp.insert(pair<T,int>(dq.back(),0));
+		auto dqcur=dq.back();
+		dq.pop_back();
+		mpp.insert(pair<T,int>(dqcur,0));
 	}
-
-	cout<<"map sort res: "<<endl;
-	auto it=mpp.begin();
-	for(;it!=mpp.end();++it){
-		cout<<it->first<<"~"<<it->second<<";";
+	for(auto it=mpp.begin();it!=mpp.end();++it){
+		dq.push_back(it->first);
 	}
-	cout<<endl;
 }
 
+template<typename T>
+void sort_3(deque<T>& dq)
+{
+	int capa=dq.size();
+	T arrtmp[capa];
+
+
+}
 
 
 template<typename T>
@@ -49,11 +54,12 @@ int main(int argc, char* argv[])
 	printarr(dq1);
 	sort_2(dq1);
 	printarr(dq1);
-	
+
 	std::deque<string> dq2{"Bb","Aa","pP","Ee"};
 	printarr(dq2);
 	sort_1(dq2);
 	printarr(dq2);
+	
 	return 0;
 }
 
