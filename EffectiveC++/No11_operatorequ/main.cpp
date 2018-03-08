@@ -38,14 +38,15 @@ public:
 	{
 		pname=ptr;
 	}
-	//TestClass(const TestClass& tc)
-	//{
-	//	pname=crtstr(tc.pname);	//deep copy
-	//}
+	TestClass(const TestClass& tc)
+	{
+		pname=crtstr(tc.pname);	//deep copy
+	}
 	~TestClass()
 	{
 		cout<<"call ~TestClass"<<endl;
-		if(pname!=NULL){
+		if(pname!=NULL){	//if shallow copy will cause pname became wild pointer,if pname point a heap obj.
+			//then if use swap method, the stack memory will delete by two obj at the end of program. so deep copy is OK. 
 			cout<<"delete pname"<<endl;
 			delete pname;	
 			pname=NULL;
@@ -135,6 +136,7 @@ int main()
 	TestClass tc1(pstr1);
 	tc1.print();
 	tc1=tc1;
+	cout<<"print again"<<endl;
 	tc1.print();
 	return 0;
 }
