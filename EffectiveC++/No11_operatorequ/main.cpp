@@ -4,6 +4,8 @@
 #include "stdio.h"
 using namespace std;
 
+char* crtstr(char* par);
+
 class Widget{
 public:
 	Widget(std::string str="")
@@ -36,10 +38,23 @@ public:
 	{
 		pname=ptr;
 	}
+	//TestClass(const TestClass& tc)
+	//{
+	//	pname=crtstr(tc.pname);	//deep copy
+	//}
+	~TestClass()
+	{
+		cout<<"call ~TestClass"<<endl;
+		if(pname!=NULL){
+			cout<<"delete pname"<<endl;
+			delete pname;	
+			pname=NULL;
+		}
+	}
 	void print()
 	{
 		if(pname)
-			printf("%s\n",pname);
+			cout<<pname<<endl;
 		else
 			cout<<"pname is NULL!\n";
 	}
@@ -47,12 +62,10 @@ public:
 	TestClass& operator=(const TestClass& tc)
 	{
 		delete pname;pname=NULL;
-		if(tc.pname==NULL)
+		if(tc.pname==NULL){
 			cout<<"tc.pname is NULL!"<<endl;
-		int size=sizeof(*tc.pname);
-		pname=new char(sizeof(size));
-		memset(pname,' ',size);
-		memcpy(pname,tc.pname,size);
+		}else
+			pname=crtstr(tc.pname);
 		return *this;
 	}
 #endif
@@ -63,30 +76,43 @@ public:
 		delete pname;pname=NULL;
 		if(tc.pname==NULL)
 			cout<<"tc.pname is NULL!"<<endl;
-		int size=sizeof(*tc.pname);
-		pname=new char(sizeof(size));
-		memset(pname,' ',size);
-		memcpy(pname,tc.pname,size);
+		pname=crtstr(tc.pname);
 		return *this;
 	}
 #endif
-//#if 0
+#if 0
 	TestClass& operator=(const TestClass& tc)
 	{
+		//printf("==>%d, %s\n",sizeof(*pname),pname);//output 1,MIKE==>char* result is char,not whole string. so result is 1
 		char* ptmp=pname;
-		int size=sizeof(*tc.pname);
-		pname=new char(sizeof(size));
-		memset(pname,' ',size);
-		memcpy(pname,tc.pname,size);
+		//pname=new char[] will refresh tc.pname,if tc and this is the same object. Must use a tmp var
+		pname=crtstr(tc.pname);	
 		delete ptmp;
 		return *this;
 	}
-//#endif
+#endif
+	TestClass& operator=(const TestClass& tc)
+	{
+		TestClass tmpobj(tc);
+		char* tmpptr=tmpobj.pname;
+		tmpobj.pname=pname;
+		pname=tmpptr;
+		return *this;
+	}
 private:
 	char* pname;
 };
 
-
+char* crtstr(char* par)
+{
+	unsigned size=strlen(par);//strlen()不计算\0
+	char* tmpptr=new char[size];
+	memset(tmpptr,' ',size);//memset(tmpptr,'',10) is forbidden
+	memcpy(tmpptr,par,size);
+	par[size]='\0';
+	return tmpptr;
+	
+}
 
 int main()
 {
