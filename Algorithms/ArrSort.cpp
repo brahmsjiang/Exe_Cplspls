@@ -32,6 +32,7 @@ void sort_map(deque<T>& dq)
 template<typename T>
 void sort_bubble(deque<T>& dq)
 {
+	int exchg=0;
 	int capa=dq.size();
 	T arrtmp[capa];
 	for(int i=0;i<capa;++i){
@@ -41,13 +42,17 @@ void sort_bubble(deque<T>& dq)
 	}
 	T i,j,tmp;
 	for(i=0;i<capa;++i){
+		exchg=0;
 		for(j=capa-1;j>=i;--j){
 			if(arrtmp[j]<arrtmp[j-1]){
 				tmp=arrtmp[j];
 				arrtmp[j]=arrtmp[j-1];
 				arrtmp[j-1]=tmp;
+				exchg=1;
 			}
 		}
+		if(exchg!=1)
+			break;
 	}
 	for(int i=0;i<capa;++i){
 		dq.push_back(arrtmp[i]);	

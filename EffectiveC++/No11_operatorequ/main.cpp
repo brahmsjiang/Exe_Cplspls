@@ -81,7 +81,7 @@ public:
 		return *this;
 	}
 #endif
-#if 0
+//#if 0
 	TestClass& operator=(const TestClass& tc)
 	{
 		//printf("==>%d, %s\n",sizeof(*pname),pname);//output 1,MIKE==>char* result is char,not whole string. so result is 1
@@ -91,7 +91,8 @@ public:
 		delete ptmp;
 		return *this;
 	}
-#endif
+//#endif
+#if 0
 	TestClass& operator=(const TestClass& tc)
 	{
 		TestClass tmpobj(tc);
@@ -100,6 +101,7 @@ public:
 		pname=tmpptr;
 		return *this;
 	}
+#endif
 private:
 	char* pname;
 };
