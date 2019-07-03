@@ -7,18 +7,24 @@
 bool IsPopOrder(const int* pPush, const int* pPop, int nLength)
 {
 	bool bPossible = false;
-	if (pPush != nullptr && pPop != nullptr && nLength > 0)
+	int nMatchNum = 0;
+	if(pPush != nullptr && pPop != nullptr && nLength > 0)
 	{
 		const int* pNextPush = pPush;
 		const int* pNextPop = pPop;
 		
 		stack<int> stackData;
-		while(stackData.empty() || stackData.top() != *pNextPop)
-		{
-			if (pNextPush - pPush == nLength)
-				break;
-			stackData.push(*pNextPush);
-			pNextPush++;
+		while(pNextPop - pPop < nLength){
+			while(stackData.empty() || stackData.top() != *pNextPop)
+			{
+				if (pNextPush - pPush == nLength)
+					break;
+				stackData.push(*pNextPush);
+				pNextPush++;
+			}
+			if(stackData.top() == *pNextPop)
+				nMatchNum++;
+
 		}
 	}
 	return bPossible;
