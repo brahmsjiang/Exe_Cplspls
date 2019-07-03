@@ -4,22 +4,23 @@
 
 using namespace std;
 
-template<typename T> class StackWithMin;
+template<typename T>
+class StackWithMin;
 
 template <typename T>
-void StackWithMin::push(const T& value)
+void StackWithMin<T>::push(const T& value)
 {
 
 }
 
 template <typename T>
-void StackWithMin::pop()
+void StackWithMin<T>::pop()
 {
 
 }
 
 template <typename T>
-const T& StackWithMin::min() const
+const T& StackWithMin<T>::min() const
 {
 	
 }
@@ -34,11 +35,11 @@ public:
 	StackWithMin(const StackWithMin&)
 	void push(const T& value);
 	void pop();
-	const T& min();
+	const T& min() const;
 
 private:
 	stack<T> m_min;
-}
+};
 
 
 
