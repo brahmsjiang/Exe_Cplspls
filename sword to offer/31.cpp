@@ -3,8 +3,9 @@
 #include <stack>
 #include <assert.h>
 
+using namespace std;
 
-bool IsPopOrder(const int* pPush, const int* pPop, int nLength)
+void IsPopOrder(const int* pPush, const int* pPop, int nLength)
 {
 	bool bPossible = false;
 	int nMatchNum = 0;
@@ -22,17 +23,35 @@ bool IsPopOrder(const int* pPush, const int* pPop, int nLength)
 				stackData.push(*pNextPush);
 				pNextPush++;
 			}
-			if(stackData.top() == *pNextPop)
+			if(stackData.top() == *pNextPop) {
 				nMatchNum++;
+				pNextPop++;
+				stackData.pop();
+				continue;
+			}
+			else{
+				break;
+			}
 
 		}
+		bPossible = (nMatchNum == nLength) ? true : false;
 	}
-	return bPossible;
+	cout << (bPossible ? "possible" : "impossible") << endl;
 
 }
 
 
-int main(int argc, char* argc[])
+int main(int argc, char* argv[])
 {
+	int pushlist[] = {1,2,3,4,5};
+	int poplist1[] = {4,5,3,2,1};
+	int poplist2[] = {4,3,5,1,2};
+	int poplist3[] = {5,4,3,2,1};
+	int poplist4[] = {5,2,1,4,3};
+	IsPopOrder(pushlist,poplist1,5);
+	IsPopOrder(pushlist,poplist2,5);
+	IsPopOrder(nullptr,nullptr,5);
+	IsPopOrder(pushlist,poplist3,5);
+	IsPopOrder(pushlist,poplist4,5);
 	return 0;
 }
