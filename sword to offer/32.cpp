@@ -49,6 +49,61 @@ void Print(BinaryTreeNode* pRoot)
 
 }
 
+void PrintZhi(BinaryTreeNode* pRoot)
+{
+	if(pRoot == nullptr)
+		return;
+
+	stack<BinaryTreeNode*> nodes;
+	unsigned int toPrint = 0, nextLevel = 0;
+	bool odd = true;	//root
+	nodes.push(pRoot);
+	toPrint++;
+	while(!nodes.empty())
+	{
+		BinaryTreeNode* pNode = nodes.top();
+		cout << pNode->m_nValue << " ";
+		toPrint--;
+		if(odd == true)	//cur odd,next left to right stored
+		{
+			if (pNode->m_pLeft != nullptr)
+			{
+				nodes.push(pNode->m_pLeft);
+				nextLevel++;
+			}
+			if (pNode->m_pLeft != nullptr)
+			{
+				nodes.push(pNode->m_pRight);
+				nextLevel++;
+			}		
+		}
+		else	//cur even,next right to left stored
+		{
+			if (pNode->m_pLeft != nullptr)
+			{
+				nodes.push(pNode->m_pRight);
+				nextLevel++;
+			}
+			if (pNode->m_pRight != nullptr)
+			{
+				nodes.push(pNode->m_pLeft);
+				nextLevel++;
+			}		
+
+		}
+	
+		if(toPrint == 0)
+		{
+			odd ^= odd;
+			cout << endl;
+			toPrint = nextLevel;
+			nextLevel = 0;
+		}
+		nodes.pop();
+	}
+}
+
+
 
 int main(int argc, char* argv[])
 {
@@ -65,6 +120,9 @@ int main(int argc, char* argv[])
 	ConnectTreeNodes(pNode14, pNode12, pNode16);
 
 	Print(pNode10);
+	PrintZhi(pNode10);
+
+	DestroyTree(pNode10);
 	return 0;
 }
 
