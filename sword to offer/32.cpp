@@ -7,36 +7,23 @@
 
 using namespace std;
 
-struct BTreeNode
-{
-	int m_nVal;
-	BTreeNode* m_pLeft;
-	BTreeNode* m_pRight;
-};
 
-
-
-void Print(BTreeNode* pRoot)
+void Print(BinaryTreeNode* pRoot)
 {
 	if(pRoot == nullptr)
 		return;
 	
-	queue<BTreeNode*> nodes;
+	queue<BinaryTreeNode*> nodes;
 	unsigned int toPrint = 0, nextLevel = 0;
 	nodes.push(pRoot);
 	toPrint++;
 	while(!nodes.empty())
 	{
-		BTreeNode* pNode = nodes.front();
-		cout << pNode->m_nVal << endl;
+		BinaryTreeNode* pNode = nodes.front();
+		cout << pNode->m_nValue << " ";
 		toPrint--;
 
-		if(toPrint == 0)
-		{
-			cout << endl;
-			toPrint = nextLevel;
-		}
-
+		
 		if (pNode->m_pLeft != nullptr)
 		{
 			nodes.push(pNode->m_pLeft);
@@ -47,7 +34,15 @@ void Print(BTreeNode* pRoot)
 		{
 			nodes.push(pNode->m_pRight);
 			nextLevel++;
+		
+		}		
+		if(toPrint == 0)
+		{
+			cout << endl;
+			toPrint = nextLevel;
+			nextLevel = 0;
 		}
+
 		nodes.pop();
 		
 	}
@@ -65,7 +60,11 @@ int main(int argc, char* argv[])
 	BinaryTreeNode* pNode12 = CreateBinaryTreeNode(12);
 	BinaryTreeNode* pNode16 = CreateBinaryTreeNode(16);
 
-	ConnectTreeNodes(pNode10)
+	ConnectTreeNodes(pNode10, pNode6, pNode14);
+	ConnectTreeNodes(pNode6, pNode4, pNode8);
+	ConnectTreeNodes(pNode14, pNode12, pNode16);
+
+	Print(pNode10);
 	return 0;
 }
 
