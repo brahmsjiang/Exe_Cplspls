@@ -34,7 +34,13 @@ bool duplicate(int numbers[], int length, int* duplication)
 
 }
 
-
+void test()
+{
+	int arrnum[] = {2,3,1,0,2,5,3};
+	int dup;
+	duplicate(arrnum, sizeof(arrnum)/sizeof(int),&dup);
+	cout << dup << endl;
+}
 
 
 int main(int argc, char* argv[])
