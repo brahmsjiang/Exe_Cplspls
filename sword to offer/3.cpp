@@ -2,18 +2,18 @@
 #include <memory>
 #include <stack>
 #include <assert.h>
+#include <stdlib.h>
 #include <queue>
 #include "Utilities/List.h"
 
 using namespace std;
 
-bool duplicate(int numbers[], int length, int* duplication)
+bool duplicate1(int numbers[], int length, int* duplication)
 {
 	if(numbers == nullptr || length <= 0)
 	{
 		return false;
 	}
-	duplication = nullptr;
 
 	for(int i = 0; i < length; i++)
 	{
@@ -31,14 +31,34 @@ bool duplicate(int numbers[], int length, int* duplication)
 		}
 	}
 	return false;
+}
+
+int countRange(const int* numbers, int length, int end)
+{
+
+}
+
+int duplicate2(const int* numbers, int length)
+{
+	if (numbers == nullptr || length <= 0)
+	{
+		return -1;
+	}
+	int scope = length - 1;
+	for (int i = 1; i <= scope; ++i)
+	{
+		
+	}
 
 }
 
 void test()
 {
-	int arrnum[] = {2,3,1,0,2,5,3};
-	int dup;
-	duplicate(arrnum, sizeof(arrnum)/sizeof(int),&dup);
+	int arrnum1[] = {4,3,1,0,4,5,3};
+	int arrnum2[] = {2,3,5,4,3,2,6,7};
+	int dup = 0;
+	//duplicate1(arrnum1, sizeof(arrnum1)/sizeof(int),&dup);
+	dup = duplicate2(arrnum2, sizeof(arrnum2) / sizeof(int));
 	cout << dup << endl;
 }
 
@@ -46,7 +66,7 @@ void test()
 int main(int argc, char* argv[])
 {
     test();
-	
+	system("pause");
 	return 0;
 }
 
