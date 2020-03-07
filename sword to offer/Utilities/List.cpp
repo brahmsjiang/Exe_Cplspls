@@ -11,7 +11,7 @@ ListNode* CreateListNode(int value)
     return pNode;
 }
 
-void ConnectListnodes(ListNode* pCurrent, ListNode* pNext)
+void ConnectListNodes(ListNode* pCurrent, ListNode* pNext)
 {
     if(pCurrent == nullptr || pNext == nullptr)
     {
@@ -22,7 +22,7 @@ void ConnectListnodes(ListNode* pCurrent, ListNode* pNext)
     pCurrent->m_pNext = pNext;
 }
 
-void printListNode(ListNode* pNode)
+void PrintListNode(ListNode* pNode)
 {
     if(pNode == nullptr)
     {
@@ -48,7 +48,7 @@ void PrintList(ListNode* pHead)
     printf("\nPrintList ends.\n");
 }
 
-void DestiryList(ListNode* pHead)
+void DestoryList(ListNode* pHead)
 {
     ListNode* pNode = pHead;
     while(pNode != nullptr)
