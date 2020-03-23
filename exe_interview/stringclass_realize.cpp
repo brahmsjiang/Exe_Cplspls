@@ -28,20 +28,20 @@ String::String(const char* str)
 {
 	//first judge null, the length is 0 however data isn't because need a '\0'
 	if (nullptr == str) {
-		length = 0;
+		length = 0;	//length not include '\0'
 		data = new char[1];
 		*data = '\0';
 	}
 	else {
 		length = strlen(str);
 		data = new char[length + 1];
-		strcpy(data, str);	//must use strcpy, would copy '\0'
+		strcpy(data, str);	//must use strcpy, would copy '\0' in ori str
 	}
 }
 
 String::String(const String& str)
 {
-	//deep copy, need not use delete, because the obj doesn't exist first
+	//deep copy, need not use delete, because it's constructor and the obj doesn't exist first
 	length = str.size();
 	data = new char[length + 1];
 	strcpy(data, str.c_str());
@@ -54,10 +54,11 @@ String::~String()
 	length = 0;
 }
 
+//可以认为，资源管理类的赋值运算符的套路里，都要先delete自己，因为自己即将指向其他对象了
 String& String::operator=(const String& str)
 {
-	if (*this == str) return *this;	//1.solve self-assignment
-	delete[] data;	//2.delete ori data
+	if (*this == str) return *this;	//1.solve self-assignment， 赋值运算符都要先判断这个
+	delete[] data;	//2.delete ori data,不需要判空，以为走到构造函数的话势必构造成功，构造成功说明new成功
 
 	length = str.size();
 	data = new char[length + 1];
@@ -66,14 +67,15 @@ String& String::operator=(const String& str)
 	return *this;	//4.return *this
 }
 
+//加运算符肯定返回一个右值
 String String::operator+(const String& str) const
 {
 	//create space for new obj, copy two str, return new obj
 	String newString;
 	newString.length = length + str.size();
-	newString.data = new char[newString.length + 1];
+	newString.data = new char[newString.length + 1];//这个构造函数中一样，给‘\0’保留空间
 	strcpy(newString.data, data);
-	strcat(newString.data, str.data);
+	strcat(newString.data, str.data);	//stcat would cover dest str's '\0'
 	return newString;
 }
 
