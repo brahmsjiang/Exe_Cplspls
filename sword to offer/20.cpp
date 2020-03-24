@@ -9,26 +9,21 @@ bool scanInteger(const char** str);
 // A整数(可带符号) B小数(无符号) C指数(可带符号)
 bool isNumeric(const char* str)
 {
-    if (nullptr == str)
+    if (str == nullptr)
         return false;
 
-    bool numeric = scanInteger(&str);
-    //出现'.', 接下来是小数部分
+    bool numeric = scanInteger(&str);//这里要改动char*的值，必须传入char**
     if (*str == '.')
     {
-        ++str;
-        //.123 or 233. or 233.123
+        str++;//这里str++,对isNumeric用户而言不会改str的值。但经scanUnsignedInteger调用后,str的值被改变了；因为后续判断需要移动str指针的值
         numeric = scanUnsignedInteger(&str) || numeric;
     }
-
-    if (*str == 'e' || *str == 'E')
+    if (*str == 'e' || *str == 'E')//'e|E'前面可以不带符号
     {
-        ++str;
-        // .e1 or e1 is invalid
-        // 12e or 12e+5.4 is also invalid
-        numeric = numeric && scanInteger(&str);
+        str++;
+        numeric = scanInteger(&str) && numeric;
     }
-    return numeric && *str == '\0';
+    return (*str == '\0') && numeric;//必须字符串到末尾,否则表示中间有非法字符
 }
 
 bool scanUnsignedInteger(const char** str)
@@ -36,20 +31,19 @@ bool scanUnsignedInteger(const char** str)
     const char* before = *str;
     while (**str != '\0' && **str >= '0' && **str <= '9')
         ++(*str);
-
-    //当str中存在0~9数字时，返回true
     return *str > before;
 }
 
 bool scanInteger(const char** str)
 {
-    if (**str == '+' || **str == '-')
+    if (**str == '+' || **str == '-')//这里的正负号可有可无,所以scanUnsignedInteger不放在if语句内
         ++(*str);
     return scanUnsignedInteger(str);
 }
 
 int main(int argc, char* argv[])
 {
+#if 0
     cout << isNumeric("+1") << endl;
     cout << isNumeric("-0") << endl;
     cout << isNumeric("11.23") << endl;
@@ -60,5 +54,7 @@ int main(int argc, char* argv[])
     cout << isNumeric("210.2E-2") << endl;
     cout << isNumeric("") << endl;
     cout << isNumeric(nullptr) << endl;
+#endif    
+    cout << isNumeric("1 ") << endl;
     return 0;
 }
