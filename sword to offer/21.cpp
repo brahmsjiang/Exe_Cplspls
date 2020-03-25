@@ -44,6 +44,34 @@ void RecorderOddEven_n1(int* pData, unsigned int length)
 	}
 }
 
+bool isPositive(int val)
+{
+	return val >= 0;
+}
+
+void Recorder(int* pData, unsigned int length, bool(*func)(int))
+{
+	if (pData == nullptr || length == 0 || func == nullptr)
+		return;
+
+	int* p1 = pData;
+	int* p2 = pData + length - 1;
+
+	while (p1 <= p2)
+	{
+		while (p1 <= p2 && func(*p1))//判断奇偶位运算： & 0x1
+			p1++;
+
+		while (p1 <= p2 && !func(*p2))//每次移动前都要判别指针p1<=p2
+			p2--;
+
+		if (p1 <= p2) {
+			int tmp = *p1;
+			*p1 = *p2;
+			*p2 = tmp;
+		}
+	}
+}
 
 int main(int argc, char* argv[])
 {
@@ -51,5 +79,7 @@ int main(int argc, char* argv[])
 	//RecorderOddEven_n2(vec, 7);
 	RecorderOddEven_n1(vec, 7);
 
+	int vec2[] = { -1,2,-3,4,-5,6,-7 };
+	Recorder(vec2, 7, isPositive);
 	return 0;
 }
