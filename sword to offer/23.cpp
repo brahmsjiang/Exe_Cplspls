@@ -1,4 +1,5 @@
 #include <iostream>
+#include "assert.h"
 #include "Utilities\List.h"
 
 using namespace std;
@@ -9,11 +10,13 @@ ListNode* MeetingNode(ListNode* pHead)
         return nullptr;
     ListNode* pSlow = pHead;
     ListNode* pFast = pHead;
-    while (pFast->m_pNext != nullptr || pSlow->m_pNext != nullptr || pFast != pSlow)
+    do 
     {
         pSlow = pSlow->m_pNext;//1 step forward 
-        pHead = pFast->m_pNext->m_pNext;//2 step forward
-    }
+        pFast = pFast->m_pNext->m_pNext;//2 step forward
+    } 
+    while (pFast != nullptr && pSlow != nullptr && pFast != pSlow);
+
     if (pFast == pSlow && pFast != nullptr)
     {
         return pFast;
@@ -23,8 +26,35 @@ ListNode* MeetingNode(ListNode* pHead)
 
 ListNode* EntryNodeOfLoop(ListNode* pHead)
 {
-    if (pHead == nullptr)
-        return nullptr;
+    ListNode* metNode = MeetingNode(pHead);
+    if (nullptr != metNode)
+    {
+        int LoopNum = 0;
+        ListNode* pNxt = metNode;
+        do 
+        {
+            pNxt = pNxt->m_pNext;
+            ++LoopNum;
+        }
+        while (pNxt != metNode);
+        assert(pNxt == metNode);
+
+        ListNode* pSlow = pHead;
+        ListNode* pFast = pHead;
+        for (int i = 0; i < LoopNum; ++i)
+        {
+            pFast = pFast->m_pNext;
+        }
+
+        while (pFast != pSlow)
+        {
+            pSlow = pSlow->m_pNext;//1 step forward 
+            pFast = pFast->m_pNext;//1 step forward
+        }
+        assert(pSlow == pFast);
+        return pFast;
+    }
+    return metNode;
 }
 
 int main(int argc, char* argv[])
@@ -40,8 +70,9 @@ int main(int argc, char* argv[])
     ConnectListNodes(p3, p4);
     ConnectListNodes(p4, p5);
     ConnectListNodes(p5, p6);
-    ConnectListNodes(p5, p3);
+    ConnectListNodes(p6, p3);
 
-
+    ListNode* res = MeetingNode(p1);
+    ListNode* res2 = EntryNodeOfLoop(p1);
 	return 0;
 }
