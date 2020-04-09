@@ -12,8 +12,7 @@ bool HasSubtree(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
 
 	bool res = false;
 	if (pRoot1->m_nValue == pRoot2->m_nValue)
-		if (DoesTree1HaveTree2(pRoot1, pRoot2))//only equal then match subtree in oritree, otherwise no need to match again
-			res = true;
+		res = DoesTree1HaveTree2(pRoot1, pRoot2));//only equal then match subtree in oritree, otherwise no need to match again
 	if (!res)
 		res = HasSubtree(pRoot1->m_pLeft, pRoot2);
 	if (!res)
@@ -24,8 +23,11 @@ bool HasSubtree(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
 
 bool DoesTree1HaveTree2(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
 {
-	if (pRoot1 == nullptr || pRoot2 == nullptr)
+	if (pRoot2 == nullptr)
 		return true;
+
+	if (pRoot1 == nullptr)
+		return false;
 
 	if (pRoot1->m_nValue == pRoot2->m_nValue)
 	{
