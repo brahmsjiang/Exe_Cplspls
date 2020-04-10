@@ -12,29 +12,26 @@ bool HasSubtree(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
 
 	bool res = false;
 	if (pRoot1->m_nValue == pRoot2->m_nValue)
-		res = DoesTree1HaveTree2(pRoot1, pRoot2));//only equal then match subtree in oritree, otherwise no need to match again
+		res = DoesTree1HaveTree2(pRoot1, pRoot2);//only equal then match subtree in oritree, otherwise no need to match again
 	if (!res)
 		res = HasSubtree(pRoot1->m_pLeft, pRoot2);
 	if (!res)
 		res = HasSubtree(pRoot1->m_pRight, pRoot2);
 	
-	return false;
+	return res;
 }
 
 bool DoesTree1HaveTree2(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
 {
-	if (pRoot2 == nullptr)
-		return true;
+	if (pRoot2 == nullptr)//1 ways to go this: DoesTree1HaveTree2
+		return true;//pRoot2's parent is leaf, means all node be matched already
 
-	if (pRoot1 == nullptr)
-		return false;
+	if (pRoot1 == nullptr)//2 ways to go this: case1 HasSubtree or case2 DoesTree1HaveTree2
+		return false;//(both case1 & case2)pRoot1's parent is a leaf, impossible to match
 
 	if (pRoot1->m_nValue == pRoot2->m_nValue)
 	{
-		if(pRoot2->m_pLeft == nullptr && pRoot2->m_pRight == nullptr)
-			return true;
-		else
-			return DoesTree1HaveTree2(pRoot1->m_pLeft, pRoot2->m_pLeft) && DoesTree1HaveTree2(pRoot1->m_pRight, pRoot2->m_pRight);
+		return DoesTree1HaveTree2(pRoot1->m_pLeft, pRoot2->m_pLeft) && DoesTree1HaveTree2(pRoot1->m_pRight, pRoot2->m_pRight);
 	}		
 
 	return false;
