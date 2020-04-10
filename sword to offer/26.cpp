@@ -75,10 +75,46 @@ void test2()
 	bool res = HasSubtree(head, head_);//test failed
 }
 
+void test3()
+{
+	BinaryTreeNode* head = nullptr;
+	BinaryTreeNode* head_ = CreateBinaryTreeNode(3);
+
+	bool res = HasSubtree(head, head_);//test failed
+}
+
+void test4()
+{
+	BinaryTreeNode* head = nullptr;
+	BinaryTreeNode* head_ = nullptr;
+
+	bool res = HasSubtree(head, head_);//test failed
+}
+
+void test5()
+{
+	BinaryTreeNode* head = CreateBinaryTreeNode(1);
+	BinaryTreeNode* node2 = CreateBinaryTreeNode(2);
+	BinaryTreeNode* node3 = CreateBinaryTreeNode(3);
+	BinaryTreeNode* node4 = CreateBinaryTreeNode(4);
+	BinaryTreeNode* node5 = CreateBinaryTreeNode(5);
+	ConnectTreeNodes(head, nullptr, node2);
+	ConnectTreeNodes(node2, nullptr, node3);
+	ConnectTreeNodes(node3, node5, node4);
+
+	BinaryTreeNode* head_ = CreateBinaryTreeNode(3);
+	BinaryTreeNode* node4_ = CreateBinaryTreeNode(4);
+	ConnectTreeNodes(head_, nullptr, node4_);
+
+	bool res = HasSubtree(head, head_);//test failed
+}
+
 int main(int argc, char* argv[])
 {
 	test1();
 	test2();
-
+	test3();
+	test4();
+	test5();
 	return 0;
 }
