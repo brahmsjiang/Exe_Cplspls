@@ -10,14 +10,14 @@ bool VerifySequenceOfBST(int sequence[], size_t length)
 
 	int root = sequence[length - 1];
 
-	size_t i = 0;
+	size_t i = 0;//regard as left tree
 	for (; i < length - 1; i++)
 	{
 		if (sequence[i] > root)
 			break;
 	}
 
-	size_t j = i;
+	size_t j = i;//left vec regard as right tree
 	for (; j < length - 1; j++)
 	{
 		if (sequence[j] < root)
@@ -25,11 +25,11 @@ bool VerifySequenceOfBST(int sequence[], size_t length)
 	}
 	
 	bool resL = true;
-	if (i > 0)
+	if (i > 0)//left tree more than 1 ele
 		resL = VerifySequenceOfBST(sequence, i);
 
 	bool resR = true;
-	if (length - 1 > i)
+	if (length - 1 > i)//right tree more than 1 ele
 		resR = VerifySequenceOfBST(sequence + i, length - 1 - i);
 
 	return resL && resR;
