@@ -67,7 +67,7 @@ void AddToTail(ListNode** pHead, int value)
 
     if(*pHead == nullptr)
     {
-        *pHead == pNew; //type** for here, could modify head node, type* only modify headnode's element
+        *pHead = pNew; //type** for here, could modify head node, type* only modify headnode's element
     }
     else{
         ListNode* pNode = *pHead;
@@ -78,7 +78,6 @@ void AddToTail(ListNode** pHead, int value)
         pNode->m_pNext = pNew;
 
     }
-
 }
 
 void RemoveNode(ListNode** pHead, int value)
@@ -113,8 +112,50 @@ void RemoveNode(ListNode** pHead, int value)
 
 }
 
+ComplexListNode* CreateComplexListNode(int value)
+{
+	ComplexListNode* pNode = new ComplexListNode();
+	pNode->m_nValue = value;
+	pNode->m_pNext = nullptr;
+	pNode->m_pSibling = nullptr;
+	return pNode;
+}
 
+void ConnectComplexListNodes(ComplexListNode* pCurrent, ComplexListNode* pNext, ComplexListNode* pSibling)
+{
+	if (pCurrent == nullptr || (pNext == nullptr && pSibling == nullptr))
+	{
+		printf("Error to connect two nodes.\n");
+		exit(1);
+	}
 
+	if(pNext != nullptr)
+		pCurrent->m_pNext = pNext;
+	if (pSibling != nullptr)
+		pCurrent->m_pSibling = pSibling;
+}
+
+void AddToComplexTail(ComplexListNode** pHead, int value)
+{
+	ComplexListNode* pNew = new ComplexListNode();
+	pNew->m_nValue = value;
+	pNew->m_pNext = nullptr;
+	pNew->m_pSibling = nullptr;
+
+	if (*pHead == nullptr)
+	{
+		*pHead = pNew; //type** for here, could modify head node, type* only modify headnode's element
+	}
+	else {
+		ComplexListNode* pNode = *pHead;
+		while (pNode->m_pNext != nullptr)
+		{
+			pNode = pNode->m_pNext;
+		}
+		pNode->m_pNext = pNew;
+
+	}
+}
 
 
 
