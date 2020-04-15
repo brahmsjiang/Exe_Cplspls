@@ -133,16 +133,12 @@ ComplexListNode* ReconnectNodes(ComplexListNode* pHead)
 		return nullptr;
 
 	ComplexListNode* pMergOri = pHead;
-
-	ComplexListNode* pOriHead = nullptr;
 	ComplexListNode* pNewHead = nullptr;
     size_t count = 0;
 	while (pMergOri != nullptr)
 	{
         ++count;
-        if (count == 1)
-            pOriHead = pMergOri;
-        else if (count == 2)
+        if (count == 2)
             pNewHead = pMergOri;
         
         ComplexListNode* pMergNxt = pMergOri->m_pNext;
