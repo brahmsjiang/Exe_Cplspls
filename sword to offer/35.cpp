@@ -133,16 +133,27 @@ ComplexListNode* ReconnectNodes(ComplexListNode* pHead)
 		return nullptr;
 
 	ComplexListNode* pMergOri = pHead;
-	ComplexListNode* pCurNew = nullptr;
+
+	ComplexListNode* pOriHead = nullptr;
 	ComplexListNode* pNewHead = nullptr;
+    size_t count = 0;
 	while (pMergOri != nullptr)
 	{
-		pCurNew = pMergOri->m_pNext;
-		if (pNewHead == nullptr && pCurNew != nullptr)
-			pNewHead = pCurNew;
+        ++count;
+        if (count == 1)
+            pOriHead = pMergOri;
+        else if (count == 2)
+            pNewHead = pMergOri;
+        
+        ComplexListNode* pMergNxt = pMergOri->m_pNext;
+        if (pMergOri->m_pNext != nullptr)
+            pMergOri->m_pNext = pMergOri->m_pNext->m_pNext;
+        else
+            pMergOri->m_pNext = nullptr;
 
-
+        pMergOri = pMergNxt;
 	}
+    return pNewHead;
 }
 
 ComplexListNode* Clone3(ComplexListNode* pHead)
