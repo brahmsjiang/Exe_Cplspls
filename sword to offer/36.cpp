@@ -23,14 +23,21 @@ void ConvertNode(BinaryTreeNode* pNode, BinaryTreeNode** pLastNodeInList)
     if (pNode == nullptr)
         return;
 
-    BinaryTreeNode* pCurrent = pNode;
+    BinaryTreeNode* pCurrent = pNode;//const parameter should store in val in cur scope
 
-    if (pCurrent->m_pLeft != nullptr)
+	//lastnode jump to left node or not
+	if (pCurrent->m_pLeft != nullptr)
         ConvertNode(pCurrent->m_pLeft, pLastNodeInList);
-    pCurrent->m_pLeft = *pLastNodeInList;
+    
+	//connect lastnode(maybe lnode or midnode) to curnode, curnode must be larger
+	pCurrent->m_pLeft = *pLastNodeInList;
+	if (*pLastNodeInList != nullptr)
+		(*pLastNodeInList)->m_pRight = pCurrent;
 
+	//lastnode jump to middle node
     *pLastNodeInList = pCurrent;
 
+	//lastnode jump to right node or not
     if (pCurrent->m_pRight != nullptr)
         ConvertNode(pCurrent->m_pRight, pLastNodeInList);
 }
@@ -47,6 +54,8 @@ void test1()
     ConnectTreeNodes(n10, n6, n14);
     ConnectTreeNodes(n6, n4, n8);
     ConnectTreeNodes(n14, n12, n16);
+
+	BinaryTreeNode* head = Convert(n10);
 }
 
 int main(int argc, char* argv[])
