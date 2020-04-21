@@ -48,7 +48,10 @@ void Deserialize(BinaryTreeNode** pRoot, istream& stream)
 	int number;
 	if (ReadStream(stream, &number))
 	{
+        *pRoot = CreateBinaryTreeNode(number);
 
+        Deserialize(&(*pRoot)->m_pLeft, stream);
+        Deserialize(&(*pRoot)->m_pRight, stream);
 	}
 }
 
@@ -62,8 +65,28 @@ void Test(const char* testName, const BinaryTreeNode* pRoot)
 	fileOut.open(filename);
 
 	Serialize(pRoot, fileOut);
+    fileOut.close();
+    //print the serialized file
+    ifstream fileIn1;
+    char ch;
+    fileIn1.open(filename);
+    while (!fileIn1.eof())
+    {
+        fileIn1 >> ch;
+        cout << ch;
+    }
+    fileIn1.close();
+    cout << endl;
+
+    //deserialize//
+    ifstream fileIn2;
+    fileIn2.open("test_input.txt");
+    BinaryTreeNode* pNewRoot = nullptr;
+    Deserialize(&pNewRoot, fileIn2);
+    fileIn2.close();
 
 }
+
 
 void test1()
 {
@@ -82,7 +105,6 @@ void test1()
 int main(int argc, char* argv[])
 {
 	test1();
-
 
 	return 0;
 }
