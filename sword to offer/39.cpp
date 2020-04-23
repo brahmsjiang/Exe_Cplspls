@@ -49,7 +49,7 @@ bool CheckMoreThanHalf(int* numbers, int len, int number)
 	return false;
 }
 
-int MoreThanHalfNum(int* numbers, int len)
+int MoreThanHalfNum1(int* numbers, int len)
 {
     if (CheckInvalidArray(numbers, len))
 		return 0;
@@ -76,16 +76,45 @@ int MoreThanHalfNum(int* numbers, int len)
 	return res;
 }
 
+int MoreThanHalfNum2(int* numbers, int len)
+{
+    if (CheckInvalidArray(numbers, len))
+        return 0;
+ 
+    int curNum = numbers[0], timesOfNum = 1;
+    for (size_t i = 1; i < len; i++)
+    {
+        if(numbers[i] != curNum)
+            --timesOfNum;
+        else
+            ++timesOfNum;
+        if (timesOfNum == 0)
+        {
+            curNum = numbers[i];
+            timesOfNum = 1;
+        }
+    }
+
+    if (timesOfNum > 0 && CheckMoreThanHalf(numbers, len, curNum))
+        return curNum;
+    return 0;
+}
 
 void test1()
 {
 	int vec[] = { 3,2,3,3,3,2,4,3,5 };
-	int res = MoreThanHalfNum(vec, sizeof(vec) / sizeof(int));
+	int res = MoreThanHalfNum1(vec, sizeof(vec) / sizeof(int));
+}
+
+void test2()
+{
+    int vec[] = { 3,2,2,2,3,2,4,3,2 };
+    int res = MoreThanHalfNum2(vec, sizeof(vec) / sizeof(int));
 }
 
 int main(int argc, char* argv[])
 {
     test1();
-
+    test2();
     return 0;
 }
