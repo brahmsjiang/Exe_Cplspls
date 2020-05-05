@@ -53,10 +53,12 @@ int NumberOf1(const char* strN)
 	if (first > 1)
 		numFirstDigit = PowerBase10(length - 1);
 	else if (first == 1)
-		//第一位已经是1，如11345，则numFirstDigit是数字10000～11345中的数目
-		numFirstDigit = atoi(strN + 1) + 1;//？
+		//第一位已经是1，如11345，则numFirstDigit是数字10000～11345中的数目，结果为1346
+		cout << strN + 1 << endl;
+		//指针类型和int类型相加，表示指针所指位置向后偏移n个单位的位置
+		numFirstDigit = atoi(strN + 1) + 1;
 
-	//numOtherDigits是1346～21345除第一位之外的数位中的数目
+	//numOtherDigits是1346～21345除第一（万）位之外的数位中的数目
 	int numOtherDigits = first * (length - 1) * PowerBase10(length - 2);
 	//numRecursive是1～1345中的数目
 	int numRecursive = NumberOf1(strN + 1);
@@ -77,6 +79,6 @@ int NumberOf1Between1AndN_(unsigned int n)
 int main(int argc, char* argv[])
 {
 	auto res = NumberOf1Between1AndN(31);
-	auto res2 = NumberOf1Between1AndN_(31);
+	auto res2 = NumberOf1Between1AndN_(21345);
 	return 0;
 }
