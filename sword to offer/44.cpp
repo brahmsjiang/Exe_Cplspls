@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -39,29 +40,51 @@ int digitAtIndex_1(int index)
 //first digit of m-bit num
 int beginNumber(int digits)
 {
-    if (digits == 1)
-        return 0;
-    
+	if (digits == 1)
+		return 0;
+
+	return (int)std::pow(10, digits - 1);
 }
 
-//how many nums included in m digits. m=3, thus nums is 90(10~99)
+//how many nums included in m digits. m=2, thus nums is 90(10~99)
 int countOfIntegers(int digits)
 {
-
+	string minDigitStr("1");
+	string maxDigitStr("9");
+	--digits;
+	while (digits > 0)
+	{
+		minDigitStr.append("0");
+		maxDigitStr.append("9");
+	}
+	return (atoi(maxDigitStr.c_str()) - atoi(minDigitStr.c_str()) + 1);
 }
 
 int digitAtIndex_2(int index, int digits)
 {
-    if (index < 0)
-        return -1;
-
+	int number = beginNumber(digits) + index / digits;
+	int indexFromRight = digits - index % digits;
+	for (int i = 1; i < indexFromRight; i++)
+		number /= 10;
+	
+	return number % 10;
 }
 
 int digitAtIndex_2(int index)
 {
     if (index < 0)
         return -1;
+	int digits = 1;
+	while (1)
+	{
+		int numbers = countOfIntegers(digits);
+		if (index < numbers * digits)
+			return digitAtIndex_2(index, digits);
 
+		index -= digits * numbers;//skip 90 * 2-digits nums
+		digits++;//digits means how many nums included in m digits. m=2, scope is 10~99
+	}
+	return -1;
 }
 
 
