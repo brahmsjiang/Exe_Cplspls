@@ -49,6 +49,9 @@ int beginNumber(int digits)
 //how many nums included in m digits. m=2, thus nums is 90(10~99)
 int countOfIntegers(int digits)
 {
+	if (digits == 1)
+		return 10;
+
 	string minDigitStr("1");
 	string maxDigitStr("9");
 	--digits;
@@ -56,15 +59,16 @@ int countOfIntegers(int digits)
 	{
 		minDigitStr.append("0");
 		maxDigitStr.append("9");
+		--digits;
 	}
 	return (atoi(maxDigitStr.c_str()) - atoi(minDigitStr.c_str()) + 1);
 }
 
 int digitAtIndex_2(int index, int digits)
 {
-	int number = beginNumber(digits) + index / digits;
-	int indexFromRight = digits - index % digits;
-	for (int i = 1; i < indexFromRight; i++)
+	int number = beginNumber(digits) + index / digits;//for expl, target idx here is 811=270*3+1, index/digits = 270, number=100+270=370
+	int indexFromRight = digits - index % digits;//index % digits = 811%3 = 1
+	for (int i = 1; i < indexFromRight; i++)//from right, have to divide by 10 one by one
 		number /= 10;
 	
 	return number % 10;
@@ -90,7 +94,7 @@ int digitAtIndex_2(int index)
 
 int main(int argc, char* argv[])
 {
-	int res = digitAtIndex_1(15);
-    res = digitAtIndex_2(15);
+	int res = digitAtIndex_1(1525);
+	int res2 = digitAtIndex_2(1525);
     return 0;
 }
