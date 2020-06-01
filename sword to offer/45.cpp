@@ -8,11 +8,14 @@ void curVal(int* nums, int idx, int len, std::string& res, int& maxVal)
     {
         int newMaxval = atoi(res.c_str());
         maxVal = (newMaxval > maxVal) ? newMaxval : maxVal;
-        res.pop_back();
+		res.clear();
         return;
     }
         
     int subNumval = nums[idx];
+	res += std::to_string(subNumval);
+	curVal(nums, idx + 1, len, res, maxVal);
+
     for (int i = idx; i < len; ++i)
     {
         //exchange head's element with mid's element
@@ -20,9 +23,7 @@ void curVal(int* nums, int idx, int len, std::string& res, int& maxVal)
         subNumval = nums[i];
         nums[i] = tmp;
 
-        res += std::to_string(subNumval);
-        curVal(nums, idx + 1, len, res, maxVal);
-        res.pop_back();
+		curVal(nums, idx, len, res, maxVal);
     }
 }
 
