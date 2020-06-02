@@ -6,9 +6,16 @@ void curVal(int* nums, int idx, int len, std::string& res, int& maxVal)
 {
     if (idx == len)
     {
-        int newMaxval = atoi(res.c_str());
+		std::string res0;
+		for (size_t i = 0; i < len; i++)
+		{
+			res0 += std::to_string(nums[i]);
+		}
+
+        int newMaxval = atoi(res0.c_str());
         maxVal = (newMaxval > maxVal) ? newMaxval : maxVal;
 		res.clear();
+		std::cout << newMaxval << std::endl;
         return;
     }
         
@@ -16,7 +23,7 @@ void curVal(int* nums, int idx, int len, std::string& res, int& maxVal)
 	res += std::to_string(subNumval);
 	curVal(nums, idx + 1, len, res, maxVal);
 
-    for (int i = idx; i < len; ++i)
+    for (int i = idx + 1; i < len; ++i)
     {
         //exchange head's element with mid's element
         int tmp = subNumval;
@@ -27,6 +34,34 @@ void curVal(int* nums, int idx, int len, std::string& res, int& maxVal)
     }
 }
 
+void curVal1(int* nums, int idx, int len, int& maxVal)
+{
+	if (idx == len)
+	{
+		std::string res0;
+		for (size_t i = 0; i < len; i++)
+		{
+			res0 += std::to_string(nums[i]);
+		}
+		int newMaxval = atoi(res0.c_str());
+		maxVal = (newMaxval > maxVal) ? newMaxval : maxVal;
+		return;
+	}
+
+	int subNumval = nums[idx];
+	curVal1(nums, idx + 1, len, maxVal);
+
+	for (int i = idx + 1; i < len; ++i)
+	{
+		//exchange head's element with mid's element
+		int tmp = subNumval;
+		subNumval = nums[i];
+		nums[i] = tmp;
+
+		curVal1(nums, idx, len, maxVal);
+	}
+}
+
 void PrintMinNum1(int* nums, int len)
 {
     using namespace std;
@@ -35,7 +70,7 @@ void PrintMinNum1(int* nums, int len)
 
     int maxVal = 0;
     std::string res;
-    curVal(nums, 0, len, res, maxVal);
+	curVal1(nums, 0, len, maxVal);
 
     cout << maxVal << endl;
 }
