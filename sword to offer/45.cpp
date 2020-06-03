@@ -38,27 +38,26 @@ void curVal1(int* nums, int idx, int len, int& maxVal)
 {
 	if (idx == len)
 	{
-		std::string res0;
+		std::string res;
 		for (size_t i = 0; i < len; i++)
 		{
-			res0 += std::to_string(nums[i]);
+			res += std::to_string(nums[i]);
 		}
-		int newMaxval = atoi(res0.c_str());
+		int newMaxval = atoi(res.c_str());
 		maxVal = (newMaxval > maxVal) ? newMaxval : maxVal;
 		return;
 	}
 
-	int subNumval = nums[idx];
 	curVal1(nums, idx + 1, len, maxVal);
 
-	for (int i = idx + 1; i < len; ++i)
+	for (size_t i = idx + 1; i < len; i++)
 	{
 		//exchange head's element with mid's element
-		int tmp = subNumval;
-		subNumval = nums[i];
-		nums[i] = tmp;
+		int tmp = nums[i];
+        nums[i] = nums[idx];
+        nums[idx] = tmp;
 
-		curVal1(nums, idx, len, maxVal);
+		curVal1(nums, idx, len, maxVal);//wrong, 
 	}
 }
 
