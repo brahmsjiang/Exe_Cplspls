@@ -1,64 +1,54 @@
 #include <iostream>
 #include <string>
+#include "stdio.h"
 
 
-void curVal(int* nums, int idx, int len, std::string& res, int& maxVal)
+using namespace std;
+
+int layer = 0;
+bool layprinted = false;
+void curVal(int* nums, int pBegin, int len, int& maxVal)
 {
-    if (idx == len)
+    if (layer > 0)
     {
-		std::string res0;
-		for (size_t i = 0; i < len; i++)
-		{
-			res0 += std::to_string(nums[i]);
-		}
+        for (size_t i = 0; i < layer; i++)
+            printf("    ");
+    }
+    ++layer;
 
-        int newMaxval = atoi(res0.c_str());
+    std::string res;
+    for (size_t i = 0; i < len; i++)
+    {
+        res += std::to_string(nums[i]);
+    }
+    int newMaxval = atoi(res.c_str());
+
+    printf("pBegin: %d  nums: %d    ", pBegin, newMaxval);
+    if (pBegin == len)
+    {
+        printf("==>maxVal: %d", newMaxval);
         maxVal = (newMaxval > maxVal) ? newMaxval : maxVal;
-		res.clear();
-		std::cout << newMaxval << std::endl;
-        return;
     }
-        
-    int subNumval = nums[idx];
-	res += std::to_string(subNumval);
-	curVal(nums, idx + 1, len, res, maxVal);
-
-    for (int i = idx + 1; i < len; ++i)
+    else 
     {
-        //exchange head's element with mid's element
-        int tmp = subNumval;
-        subNumval = nums[i];
-        nums[i] = tmp;
+        for (size_t pCur = pBegin; pCur < len; pCur++)
+        {
+            printf("pBegin[%d] pCur[%d]  in loop\n", pBegin, pCur);
+            //exchange head's element with mid's element
+            int tmp = nums[pCur];
+            nums[pCur] = nums[pBegin];
+            nums[pBegin] = tmp;
 
-		curVal(nums, idx, len, res, maxVal);
+            curVal(nums, pCur + 1, len, maxVal);
+
+            tmp = nums[pCur];
+            nums[pCur] = nums[pBegin];
+            nums[pBegin] = tmp;
+        }
     }
-}
-
-void curVal1(int* nums, int idx, int len, int& maxVal)
-{
-	if (idx == len)
-	{
-		std::string res;
-		for (size_t i = 0; i < len; i++)
-		{
-			res += std::to_string(nums[i]);
-		}
-		int newMaxval = atoi(res.c_str());
-		maxVal = (newMaxval > maxVal) ? newMaxval : maxVal;
-		return;
-	}
-
-	curVal1(nums, idx + 1, len, maxVal);
-
-	for (size_t i = idx + 1; i < len; i++)
-	{
-		//exchange head's element with mid's element
-		int tmp = nums[i];
-        nums[i] = nums[idx];
-        nums[idx] = tmp;
-
-		curVal1(nums, idx, len, maxVal);//wrong, 
-	}
+    
+    cout << endl;
+    layprinted = false;
 }
 
 void PrintMinNum1(int* nums, int len)
@@ -68,10 +58,9 @@ void PrintMinNum1(int* nums, int len)
         return;
 
     int maxVal = 0;
-    std::string res;
-	curVal1(nums, 0, len, maxVal);
+    curVal(nums, 0, len, maxVal);
 
-    cout << maxVal << endl;
+    //cout << maxVal << endl;
 }
 
 void PrintMinNum2(int* nums, int len)
