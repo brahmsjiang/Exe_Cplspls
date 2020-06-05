@@ -71,6 +71,8 @@ void PrintMinNum1(int* nums, int len)
     cout << "[maxVal]====>" << maxVal << endl;
 }
 
+//////////////////////////////////////
+
 void PrintMinNum2(int* nums, int len)
 {
     using namespace std;
