@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <string>
+#include <algorithm>
 #include "stdio.h"
 
 using namespace std;
@@ -72,21 +73,43 @@ void PrintMinNum1(int* nums, int len)
 }
 
 //////////////////////////////////////
+const int g_MaxNumberLength = 10;
+char* g_StrCombine1 = new char[g_MaxNumberLength * 2 + 1];
+char* g_StrCombine2 = new char[g_MaxNumberLength * 2 + 1];
+
+int compare(const void* strNumber1, const void* strNumber2)
+{
+	//why use char** not char*?
+	strcpy(g_StrCombine1, *(const char**)strNumber1);
+	strcat(g_StrCombine1, *(const char**)strNumber2);
+
+	strcpy(g_StrCombine2, *(const char**)strNumber2);
+	strcat(g_StrCombine2, *(const char**)strNumber1);
+
+	return strcmp(g_StrCombine1, g_StrCombine2);
+}
 
 void PrintMinNum2(int* nums, int len)
 {
-    using namespace std;
     if (nums == nullptr)
         return;
-    int maxVal = 0;
-    
-
-    cout << "[maxVal]====>" << maxVal << endl;
+	char** numsStr = (char**)(new int[len]);// no new (char** ==> or pointer),char** is a addr so int could be converted to.
+	for (size_t i = 0; i < len; i++)
+	{
+		numsStr[i] = new char[g_MaxNumberLength];
+		sprintf(numsStr[i], "%d", nums[i]);//sprintf format str, printf format output-stream 
+	}
+	std::qsort(numsStr, len, sizeof(char*), compare);
+	for (size_t i = 0; i < len; i++)
+	{
+		printf("%s", numsStr[i]);
+	}
 }
 
 int main(int argc, char* argv[])
 {
     int vec1[] = { 4, 3, 5, 1 };
     PrintMinNum1(vec1, sizeof(vec1)/sizeof(int));
+	PrintMinNum2(vec1, sizeof(vec1) / sizeof(int));
     return 0;
 }
