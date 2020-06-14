@@ -11,7 +11,7 @@ void printTab(int layer)
         printf("    ");
 }
 
-int getTransCount(const string& number)
+int getTransCount1(const string& number)
 {
     ++layer;
     printTab(layer);
@@ -35,7 +35,7 @@ int getTransCount(const string& number)
     numbertmp.pop_back();
     printTab(layer);
     cout << "before getTransCount, use cur char1" << endl;
-    count = getTransCount(numbertmp);
+    count = getTransCount1(numbertmp);
 
     //second last two char
     if (number.size() >= 2)
@@ -46,7 +46,7 @@ int getTransCount(const string& number)
             numbertmp.pop_back();
             printTab(layer);
             cout << "before getTransCount, use cur char2" << endl;
-            count += getTransCount(numbertmp);
+            count += getTransCount1(numbertmp);
         }
     }
    
@@ -57,13 +57,49 @@ int getTransCount(const string& number)
     return count;
 }
 
+int getTransCount2(const string& number)
+{
+	int length = number.length();
+	int* counts = new int[length];
+	int count = 0;
+	
+	for (size_t i = length - 1; i >= 0; --i)
+	{
+		count = 0;
+		if (i < length - 1)
+			count = counts[i + 1];
+		else
+			count = 1;
+
+		if (i < length - 1)
+		{
+			int digit1 = number[i] - '0';
+			int digit2 = number[i + 1] - '0';
+			int converted = digit1 * 10 + digit2;
+			if (converted >= 10 && converted <= 25)
+			{
+				if (i < length - 2)
+					count += counts[i + 2];
+				else
+					count += 1;
+			}
+		}
+		counts[i] = count;
+	}
+
+	count = counts[0];
+	delete[] counts;
+
+	return count;
+}
+
 int getTransCount(int number)
 {
     if (number < 0)
         return 0;
 
     string numberInStr = std::to_string(number);
-    return getTransCount(numberInStr);
+    return getTransCount2(numberInStr);
 }
 
 int main(int argc, char* argv[])
