@@ -59,21 +59,21 @@ int getTransCount1(const string& number)
 
 int getTransCount2(const string& number)
 {
-	int length = number.length();
-	int* counts = new int[length];
+	int length = number.length();   //how many digits
+	int* counts = new int[length];  //for cur digit, how many count exists
 	int count = 0;
 	
-	for (size_t i = length - 1; i >= 0; --i)
+	for (int i = length - 1; i >= 0; --i)
 	{
 		count = 0;
-		if (i < length - 1)
+		if (i < length - 1) //start iterator is last the element of number
 			count = counts[i + 1];
 		else
 			count = 1;
 
 		if (i < length - 1)
 		{
-			int digit1 = number[i] - '0';
+			int digit1 = number[i] - '0';   //char - '0' == digit
 			int digit2 = number[i + 1] - '0';
 			int converted = digit1 * 10 + digit2;
 			if (converted >= 10 && converted <= 25)
