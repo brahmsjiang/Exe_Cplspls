@@ -41,7 +41,11 @@ int getMaxValue_sol2(const int* values, int rows, int cols)
 {
     if (values == nullptr || rows <= 0 || cols <= 0)
         return 0;
-
+    //need to store left and up, left is in the [i] line. up is in the [i-1] line
+    //line1: 1 10 3 8
+    //line2: 12 2 9 6
+    // for upper case, cur ele is 9. before line1, vec=[1 11 13 21]
+    // at line2 and before 9, vec=[12+1 12+1+2 13 21]; from 9, vec=[13 15 15+9 15+9+6]
     int* maxValues = new int[cols];
     for (int i = 0; i < rows; ++i)
     {
