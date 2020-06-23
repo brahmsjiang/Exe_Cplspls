@@ -30,7 +30,31 @@ int longestSubStrWithoutDup1(const string& str)
 
 int longestSubStrWithoutDup2(const string& str)
 {
-    int longestLen = 0;
+    int longestLen = 0, longestLenBackup = 0;
+    //position[] means a letter's appearing index last time, -1 means never appear
+    int* position = new int[26];
+    for (int i = 0; i < 26; ++i)
+        position[i] = -1;
+
+    for (int i = 0; i < str.size(); ++i)
+    {
+        if (position[str[i] - 'a'] != -1)    //cur char duplicates
+        {
+            if (i - position[str[i] - 'a'] > longestLen)
+            {
+                ++longestLen;
+            }
+            else    //longestLen doesn't increase this time, consider a backup longestLen
+            {
+
+            }
+        }
+        else    //cur char doesn't duplicate
+        {
+            ++longestLen;
+        }
+        position[str[i] - 'a'] = i;
+    }
 
     return longestLen;
 }
