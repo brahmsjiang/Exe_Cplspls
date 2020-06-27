@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <vector>
 #include <set>
 #include <assert.h>
 
@@ -30,40 +31,40 @@ int longestSubStrWithoutDup1(const string& str)
 
 int longestSubStrWithoutDup2(const string& str)
 {
-    int longestLen = 0, longestLenBackup = 0;
-    //position[] means a letter's appearing index last time, -1 means never appear
-    int* position = new int[26];
-    for (int i = 0; i < 26; ++i)
-        position[i] = -1;
+	int curLen = 0;
+	int maxLen = 0;
 
-    for (int i = 0; i < str.size(); ++i)
-    {
-        if (position[str[i] - 'a'] != -1)    //cur char duplicates
-        {
-            if (i - position[str[i] - 'a'] > longestLen)
-            {
-                ++longestLen;
-            }
-            else    //longestLen doesn't increase this time, consider a backup longestLen
-            {
+	int* position = new int[26];
+	for (int i = 0; i < 26; ++i)
+		position[i] = -1;
 
-            }
-        }
-        else    //cur char doesn't duplicate
-        {
-            ++longestLen;
-        }
-        position[str[i] - 'a'] = i;
-    }
+	for (int i = 0; i < str.length(); i++)
+	{
+		int prevIdx = position[str[i] - 'a'];
+		if (prevIdx < 0 || i - prevIdx > curLen)
+			++curLen;
+		else
+		{
+			// duplication occurs
+			if (curLen > maxLen)
+				maxLen = curLen;
+			// ara, if idx == 3, update curLen = 2, means new substr is "ra"
+			curLen = i - prevIdx;
+		}
+		position[str[i] - 'a'] = i;
+	}
+	if (curLen > maxLen)
+		maxLen = curLen;
 
-    return longestLen;
+	delete[] position;
+	return maxLen;
 }
 
 
 int main(int argc, char* argv[])
 {
     string forTest("arabcacfrea");
-    int res = longestSubStrWithoutDup1(forTest);
-    res = longestSubStrWithoutDup2(forTest);
+    //int res = longestSubStrWithoutDup1(forTest);
+    int res2 = longestSubStrWithoutDup2(forTest);
     return 0;
 }
