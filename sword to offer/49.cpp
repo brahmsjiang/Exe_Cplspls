@@ -1,4 +1,6 @@
 #include <iostream>
+#include <chrono>
+#include <ctime>
 
 bool IsUgly(int number)
 {
@@ -28,8 +30,19 @@ int GetUglyNumber(int index)
     return number;
 }
 
+int GetUglyNumber2(int index)
+{
+
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
-    auto res = GetUglyNumber(15);
+    clock_t t0 = clock();
+    auto res = GetUglyNumber(1500);
+    clock_t t1 = clock();
+    std::cout << static_cast<double>(t1 - t0) << "ms"<< std::endl;
+
+    auto res2 = GetUglyNumber2(1500);
     return 0;
 }
