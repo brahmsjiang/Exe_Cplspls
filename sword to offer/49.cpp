@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include "assert.h"
 
 bool IsUgly(int number)
 {
@@ -26,6 +28,28 @@ int GetUglyNumber(int index)
             ++uglyFound;
     }
     return number;
+}
+
+int GetUglyNumber2(int index)
+{
+	if (index <= 0)
+		return 0;
+
+	int* uglyNums = new int[index];
+	int T2, T3, T5;
+	int curIdx = 0;
+
+	while (curIdx < index)
+	{
+		if (curIdx == 0)
+		{
+			uglyNums[curIdx] = 1;
+			T2 = T3 = T5 = 1;
+		}
+		curIdx++;
+	}
+	assert(curIdx == index);
+
 }
 
 int main(int argc, char* argv[])
