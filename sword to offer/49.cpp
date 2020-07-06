@@ -1,6 +1,9 @@
 #include <iostream>
 #include <algorithm>
+#include <chrono>
+#include <ctime>
 #include "assert.h"
+
 
 bool IsUgly(int number)
 {
@@ -50,10 +53,16 @@ int GetUglyNumber2(int index)
 	}
 	assert(curIdx == index);
 
+
 }
 
 int main(int argc, char* argv[])
 {
-    auto res = GetUglyNumber(15);
+    clock_t t0 = clock();
+    auto res = GetUglyNumber(1500);
+    clock_t t1 = clock();
+    std::cout << static_cast<double>(t1 - t0) << "ms"<< std::endl;
+
+    auto res2 = GetUglyNumber2(1500);
     return 0;
 }
