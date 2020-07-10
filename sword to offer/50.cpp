@@ -6,6 +6,9 @@
 
 char FirstNotRepeating_1(char* pString)
 {
+    if (pString == nullptr)
+        return '\0';
+
     for (int i = 0; i < strlen(pString); ++i)
     {
         char curChr = pString[i];
@@ -21,16 +24,33 @@ char FirstNotRepeating_1(char* pString)
         if (!DuplicateFlg)
             return curChr;
     }
-    return EOF;
+    return '\0';
 }
 
 char FirstNotRepeating_2(char* pString)
 {
+    if (pString == nullptr)
+        return '\0';
 
+    int hashTbl[256] = {0};
+    char* pHashKey = pString;
+    while (*pHashKey != '\0')
+        hashTbl[*(pHashKey++)]++;
+
+    pHashKey = pString;
+    while (*pHashKey != '\0')
+    {
+        if (hashTbl[*pHashKey] == 1)
+            return *pHashKey;
+        pHashKey++;
+    }
+        
+    return '\0';
 }
 
 int main(int argc, char* argv[])
 {
-    char res0 = FirstNotRepeating_1("")
+    char res0 = FirstNotRepeating_1("dfxccdeff");
+    char res1 = FirstNotRepeating_2("dfxccdeff");
     return 0;
 }
