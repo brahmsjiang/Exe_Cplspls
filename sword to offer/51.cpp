@@ -18,13 +18,31 @@ int InversePairs_1(int* data, int length)
     return NumOfInverse;
 }
 
+
+int merge_sort(int* data, int low, int high);
+
+void merge(int* data, int low, int mid, int high);
+
 int InversePairs_2(int* data, int length)
 {
     if (data == nullptr || length < 0)
         return 0;
 
+    merge_sort(data, 0, length - 1);
     return 0;
 }
+
+int merge_sort(int* data, int low, int high)
+{
+
+}
+
+void merge(int* data, int low, int mid, int high)
+{
+
+}
+
+
 
 int main(int argc, char* argv[])
 {
