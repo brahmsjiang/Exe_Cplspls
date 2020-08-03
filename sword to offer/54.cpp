@@ -3,16 +3,43 @@
 #include "Utilities/BinaryTree.h"
 
 
-BinaryTreeNode* findKNode(const BinaryTreeNode* root, int k)
+BinaryTreeNode* findKNode(BinaryTreeNode* root, int& k)
 {
+	using namespace std;
+
     if (root == nullptr)
         return nullptr;
 
-    BinaryTreeNode* res = nullptr;
-    int curCount = 0;
+	if (root->m_pLeft != nullptr)
+	{
+		auto res = findKNode(root->m_pLeft, k);
+		if (nullptr != res)
+			return res;
+	}
+	else 
+	{
+		if (--k == 0)
+			return root;
+		else
+			return nullptr;
+	}
 
-    res = 
+	if (--k == 0)
+		return root;
 
+	if (root->m_pRight != nullptr)
+	{
+		auto res = findKNode(root->m_pRight, k);
+		if (nullptr != res)
+			return res;
+	}
+	else
+	{
+		if (--k == 0)
+			return root;
+		else
+			return nullptr;
+	}
 }
 
 int main(int argc, char* argv[])
@@ -28,7 +55,8 @@ int main(int argc, char* argv[])
     ConnectTreeNodes(node3, node2, node4);
     ConnectTreeNodes(node7, node6, node8);
 
-    auto res = findKNode(root, 3);
+	int k = 7;
+    auto res = findKNode(root, k);
 
     return 0;
 }
