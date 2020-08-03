@@ -63,12 +63,12 @@ int GetNumberOfK(int* data, int length, int k)
     return number;
 }
 
-int GetMissingNumber(const int* numbers, int start, int end)
+int GetMissingNumber(const int* numbers, int len, int start, int end)
 {
 	if (numbers == nullptr || start > end)
 		return -1;
 
-	int midIdx = (end - start + 1) / 2;
+	int midIdx = (end + start) / 2;
 	int midData = numbers[midIdx];
 
 	if (midData > midIdx)
@@ -85,13 +85,67 @@ int GetMissingNumber(const int* numbers, int start, int end)
 	}
 	else //midData == midIdx
 	{
-		if (midIdx < end && numbers[midIdx + 1] > (midIdx + 1))
-			return (numbers[midIdx + 1] - 1);
-		else
+        if (midIdx < end && numbers[midIdx + 1] >(midIdx + 1))
+            return (numbers[midIdx + 1] - 1);
+        else if (midIdx == len - 1)
+            return (midData + 1);
+        else
 			start = midIdx + 1;
 
 	}
-	return GetMissingNumber(numbers, start, end);
+	return GetMissingNumber(numbers, len, start, end);
+}
+
+int GetMissingNumber1(const int* numbers, int len)
+{
+    if (numbers == nullptr || len <= 0)
+        return -1;
+
+    int left = 0;
+    int right = len - 1;
+    while (left <= right)
+    {
+        int mid = (right + left) >> 1;
+        if (numbers[mid] != mid)
+        {
+            if (mid == 0 || numbers[mid - 1] == mid - 1)//judge from left to right
+                return mid;
+            right = mid - 1;
+        }
+        else
+            left = mid + 1;
+    }
+
+    if (left == len)
+        return len;
+
+    return -1;
+}
+
+int GetNumberSameAsIndex(const int* numbers, int length)
+{
+    if (numbers == nullptr || length <= 0)
+        return -1;
+
+    int left = 0;
+    int right = length - 1;
+
+    while (left <= right)
+    {
+        int mid = (right + left) >> 1;//right move operator
+
+        if (numbers[mid] != mid)
+        {
+            if (numbers[mid] > mid)
+                right = mid - 1;
+            else
+                left = mid + 1;
+        }
+        else
+            return mid;
+    }
+
+    return -1;
 }
 
 int main(int argc, char* argv[])
@@ -99,7 +153,13 @@ int main(int argc, char* argv[])
     //int vec[] = { 1,1,2,3,3,3,3,4,4 };
     //auto res = GetNumberOfK(vec, sizeof(vec) / sizeof(int), 4);
 
-	int vec0[] = { 0,1,2,3,5 };
-	auto res1 = GetMissingNumber(vec0, 0, sizeof(vec0) / sizeof(int) - 1);
+	int vec0[] = { 0,1,2,3,4 };
+    int len0 = sizeof(vec0) / sizeof(int);
+	auto res1 = GetMissingNumber(vec0, len0, 0, len0 - 1);
+
+    int vec1[] = { 0 };
+    int len1 = sizeof(vec1) / sizeof(int);
+    auto res2 = GetNumberSameAsIndex(vec1, len1);
+
     return 0;
 }
