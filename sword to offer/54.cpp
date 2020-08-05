@@ -42,6 +42,17 @@ BinaryTreeNode* findKNode(BinaryTreeNode* root, int& k)
 	}
 }
 
+BinaryTreeNode* findKNode1(BinaryTreeNode* root, int& k)
+{
+    using namespace std;
+
+    if (root == nullptr)
+        return nullptr;
+
+    BinaryTreeNode* curNode = root;
+  
+}
+
 int main(int argc, char* argv[])
 {
     BinaryTreeNode* root = CreateBinaryTreeNode(5);
