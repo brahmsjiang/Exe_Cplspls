@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stack>
 #include "Utilities/BinaryTree.h"
+#include "assert.h"
 
 
 BinaryTreeNode* findKNode(BinaryTreeNode* root, int& k)
@@ -49,8 +50,33 @@ BinaryTreeNode* findKNode1(BinaryTreeNode* root, int& k)
     if (root == nullptr)
         return nullptr;
 
+    stack<BinaryTreeNode*> nodeStk;
     BinaryTreeNode* curNode = root;
-  
+    nodeStk.push(curNode);
+
+    while (!nodeStk.empty())
+    {
+        curNode = nodeStk.top();
+        while (curNode->m_pLeft != nullptr)
+        {
+            nodeStk.push(curNode->m_pLeft);
+            curNode = curNode->m_pLeft;
+        }
+
+        while (!nodeStk.empty())
+        {
+            curNode = nodeStk.top();
+            nodeStk.pop();
+            if (0 == --k)
+                return curNode;
+
+            if (curNode->m_pRight != nullptr)
+            {
+                nodeStk.push(curNode->m_pRight);
+                break;
+            }
+        }
+    }  
 }
 
 int main(int argc, char* argv[])
@@ -66,8 +92,9 @@ int main(int argc, char* argv[])
     ConnectTreeNodes(node3, node2, node4);
     ConnectTreeNodes(node7, node6, node8);
 
-	int k = 7;
+	int k = 3;
     auto res = findKNode(root, k);
-
+    k = 7;
+    auto res1 = findKNode1(root, k);
     return 0;
 }
