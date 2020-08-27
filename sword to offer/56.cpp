@@ -55,10 +55,38 @@ void FineNumberAppearOnce(int data[], int len, int& num1, int& num2)
 #endif
 }
 
+int FindNumberAppearingOnce(int numbers[], int len)
+{
+	if (numbers == nullptr || len <= 0)
+		throw new std::exception("Invalid input.");
+
+	int bitSum[32] = { 0 };
+	for (int i = 0; i < len; ++i)
+	{
+		int curVal = numbers[i];
+		for (int j = 31; j >= 0; --j)
+		{
+			bitSum[j] += (curVal & (1 << j));
+		}
+	}
+
+	int result = 0;
+	for (size_t i = 0; i < 32; ++i)
+	{
+		bitSum[i] %= 3;
+		result += (pow(10, i) * bitSum[i]);
+	}
+	return result;
+}
+
 int main(int argc, char* argv[])
 {
     int vec[] = { 2,3,9,3,2,7,5,5,7,6 };
     int res1 = 0, res2 = 0;
     FineNumberAppearOnce(vec, sizeof(vec) / sizeof(int), res1, res2);
+
+	int vec2[] = { 5,3,3,3,4,4,4 };
+	int res3 = FindNumberAppearingOnce(vec2, sizeof(vec2) / sizeof(int));
+
     return 0;
 }
