@@ -63,10 +63,13 @@ int FindNumberAppearingOnce(int numbers[], int len)
 	int bitSum[32] = { 0 };
 	for (int i = 0; i < len; ++i)
 	{
-		int curVal = numbers[i];
-		for (int j = 31; j >= 0; --j)
+		int bitMask = 1;//use bitmask
+		for (int j = 0; j < 32; ++j)
 		{
-			bitSum[j] += (curVal & (1 << j));
+            int bit = numbers[i] & bitMask;
+            if (bit != 0)
+                bitSum[j] += 1;
+            bitMask <<= 1;
 		}
 	}
 
@@ -74,7 +77,7 @@ int FindNumberAppearingOnce(int numbers[], int len)
 	for (size_t i = 0; i < 32; ++i)
 	{
 		bitSum[i] %= 3;
-		result += (pow(10, i) * bitSum[i]);
+		result += (pow(2, i) * bitSum[i]);
 	}
 	return result;
 }
@@ -85,7 +88,7 @@ int main(int argc, char* argv[])
     int res1 = 0, res2 = 0;
     FineNumberAppearOnce(vec, sizeof(vec) / sizeof(int), res1, res2);
 
-	int vec2[] = { 5,3,3,3,4,4,4 };
+	int vec2[] = { 3,3,3,12,4,4,4 };
 	int res3 = FindNumberAppearingOnce(vec2, sizeof(vec2) / sizeof(int));
 
     return 0;
