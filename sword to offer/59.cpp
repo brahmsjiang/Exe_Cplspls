@@ -46,7 +46,7 @@ void CQueue::push(const T& val)
     if (maxStk.empty() || maxStk.top() < val)
         maxStk.push(val);
     else
-        maxStk.push(dataStk.top());
+        maxStk.push(maxStk.top());
 }
 
 template<typename T>
@@ -93,5 +93,6 @@ int main(int argc, char* argv[])
 {
     vector<int> vec1 = { 2,3,4,2,6,2,5,1 };
     auto res1 = maxInWindows_1(vec1, 3);
+    auto res2 = maxInWindows_1(vec1, 3);
     return 0;
 }
