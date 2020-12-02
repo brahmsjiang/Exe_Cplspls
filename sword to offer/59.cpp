@@ -32,36 +32,38 @@ class CQueue
 public:
     void push(const T& val);
     void pop();
-    const T& maxVal();
+    T& maxVal();
 
 private:
-    stack<T> maxStk;
-    stack<T> dataStk;
+    queue<T> maxQue; //maxval in tail
+    queue<T> dataQue;
 };
 
 template<typename T>
 void CQueue::push(const T& val)
 {
-    dataStk.push(val);
-    if (maxStk.empty() || maxStk.top() < val)
-        maxStk.push(val);
+    dataQue.push(val);
+    if (maxQue.empty() || maxQue.back() < val)
+        maxQue.push(val);
     else
-        maxStk.push(maxStk.top());
+        maxQue.push(maxQue.back());
 }
 
 template<typename T>
 void CQueue::pop()
 {
-    if ()
+    if (!dataQue.empty() && !maxQue.empty())
     {
+        dataQue.pop();
+        maxQue.pop();
     }
 }
 
 template<typename T>
-const T& CQueue::maxVal();
+T& CQueue::maxVal();
 {
-    assert(dataStk.size() > 0 && maxStk.size() > 0);
-    return maxStk.top();
+    assert(maxQue.size() > 0);
+    return maxQue.back();
 }
 
 vector<int> maxInWindows_2(const vector<int>& num, unsigned int size)
@@ -93,6 +95,6 @@ int main(int argc, char* argv[])
 {
     vector<int> vec1 = { 2,3,4,2,6,2,5,1 };
     auto res1 = maxInWindows_1(vec1, 3);
-    auto res2 = maxInWindows_1(vec1, 3);
+    auto res2 = maxInWindows_2(vec1, 3);
     return 0;
 }
