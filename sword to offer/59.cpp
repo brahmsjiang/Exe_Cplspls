@@ -25,70 +25,33 @@ vector<int> maxInWindows_1(const vector<int>& num, unsigned int size)
     return maxInWins;
 }
 
-///////
-template<typename T>
-class CQueue
-{
-public:
-    void push(const T& val);
-    void pop();
-    T& maxVal();
-
-private:
-    queue<T> maxQue; //maxval in tail
-    queue<T> dataQue;
-};
-
-template<typename T>
-void CQueue<T>::push(const T& val)
-{
-    dataQue.push(val);
-    if (maxQue.empty() || maxQue.back() < val)
-        maxQue.push(val);
-    else
-        maxQue.push(maxQue.back());
-}
-
-template<typename T>
-void CQueue<T>::pop()
-{
-    if (!dataQue.empty() && !maxQue.empty())
-    {
-        dataQue.pop();
-        maxQue.pop();
-    }
-}
-
-template<typename T>
-T& CQueue<T>::maxVal()  //T& CQueue<T>::maxVal()
-{
-    assert(maxQue.size() > 0);
-    return maxQue.back();
-}
-
 vector<int> maxInWindows_2(const vector<int>& num, unsigned int size)
 {
     vector<int> maxInWins;
-    CQueue<int> curQueue;
+	if (num.size() >= size && size >= 1)
+	{
+		deque<int> maxQue;
+		for (size_t i = 0; i < size; i++)
+		{
+			if (maxQue.empty() || maxQue.front() < num[i])
+				maxQue.emplace_front(num[i]);
+			else
+				maxQue.push_back(num[i]);
+		}
+		maxInWins.push_back(maxQue.front());
 
-    if (num.size() < size)
-        return maxInWins;
+		for (size_t i = size; i < (num.size() - size); i++)
+		{
+			if (maxQue.front() < num[i])
+				maxQue.emplace_front(num[i]);
+			else
+				maxQue.push_back(num[i]);
+			maxInWins.push_back(maxQue.front());
+		}
+	}
+	return maxInWins;
 
-    for (int i = 0; i < size; ++i)
-    {
-        curQueue.push(num[i]);
-    }
-    maxInWins.push_back(curQueue.maxVal());
-
-    for (int i = size; i < num.size(); ++i)
-    {
-        curQueue.pop();
-        curQueue.push(num[i]);        
-        maxInWins.push_back(curQueue.maxVal());
-    }
-    return maxInWins;
 }
-
 
 int main(int argc, char* argv[])
 {
