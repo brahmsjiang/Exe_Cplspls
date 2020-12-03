@@ -40,7 +40,7 @@ private:
 };
 
 template<typename T>
-void CQueue::push(const T& val)
+void CQueue<T>::push(const T& val)
 {
     dataQue.push(val);
     if (maxQue.empty() || maxQue.back() < val)
@@ -50,7 +50,7 @@ void CQueue::push(const T& val)
 }
 
 template<typename T>
-void CQueue::pop()
+void CQueue<T>::pop()
 {
     if (!dataQue.empty() && !maxQue.empty())
     {
@@ -60,7 +60,7 @@ void CQueue::pop()
 }
 
 template<typename T>
-T& CQueue::maxVal();
+T& CQueue<T>::maxVal()  //T& CQueue<T>::maxVal()
 {
     assert(maxQue.size() > 0);
     return maxQue.back();
@@ -80,12 +80,11 @@ vector<int> maxInWindows_2(const vector<int>& num, unsigned int size)
     }
     maxInWins.push_back(curQueue.maxVal());
 
-    for (int i = 1; i <= (num.size() - size); ++i)
+    for (int i = size; i < num.size(); ++i)
     {
-        curQueue.push(*it);
-        int curMaxInWins = 0;
-        
-        maxInWins.push_back(curMaxInWins);
+        curQueue.pop();
+        curQueue.push(num[i]);        
+        maxInWins.push_back(curQueue.maxVal());
     }
     return maxInWins;
 }
