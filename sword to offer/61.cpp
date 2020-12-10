@@ -25,25 +25,24 @@ bool isContinuous(int* numbers, int len)
 		if (numbers[i] == 0)
 			++numZero;
 
-		if (i > 0)
-		{
-			curVal = numbers[i];
-			if (curVal != 0)
-			{
-				if (curVal == lstVal)
-					return false;
-				if (curVal != lstVal + 1)
-					numGap = (curVal - lstVal - 1);
-			}
-			lstVal = curVal;
-		}
+        curVal = numbers[i];
+        if (curVal != 0 && lstVal != 0)
+        {
+            if (curVal == lstVal)
+                return false;
+            if (curVal != lstVal + 1)
+            {
+                numGap += (curVal - lstVal - 1);
+            }
+        }
+        lstVal = curVal;
 	}
-	return !numGap || (numGap == numZero);
+	return (numZero >= numGap);
 }
 
 int main(int argc, char* argv[])
 {
-	int vec[5] = { 5,3,0,1,0 };
+	int vec[5] = { 6,4,0,1,0 };
 	auto res = isContinuous(vec, 5);
 	return 0;
 }
