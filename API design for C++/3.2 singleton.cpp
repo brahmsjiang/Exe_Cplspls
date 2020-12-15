@@ -6,7 +6,6 @@ using namespace std;
 class Singleton
 {
 public:
-	//static Singleton* GetInstance_p();
 	static Singleton& GetInstance();//无论返回指针还是引用，都无法访问private成员
 private:
 	Singleton() 
@@ -27,7 +26,7 @@ private:
 Singleton& Singleton::GetInstance()
 {
 	std::lock_guard<std::mutex> lock(m_mutex);//无论是否初始化，都会锁定。
-	static Singleton instance;//这句话非原子操作，编译器可能实现为static char __buffer[] + placement new
+	static Singleton instance;//这句话非原子操作，编译器可实现为static char __buffer[] + placement new
 	return instance;
 }
 
@@ -40,6 +39,8 @@ Singleton& Singleton::GetInstance()
 		std::lock_guard<std::mutex> lock(m_mutex);
 		if (!instance)//未初始化，才锁定。（读之前确实需要锁定，因为对于instance读写都有可能）
 		{
+			//编译器可实现为(1)operator new + (2)placement new + (3)pointer assignment
+			// 其中（2）（3）可调换
 			instance = new Singleton();
 		}
 	}
