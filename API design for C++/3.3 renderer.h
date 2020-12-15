@@ -1,3 +1,6 @@
+#ifndef  __IRender__
+#define __IRender__
+
 #include <string>
 
 using namespace std;
@@ -12,3 +15,5 @@ public:
     virtual void setLookAt(double x, double y, double z) = 0;
     virtual void Render() = 0;
 };
+
+#endif // ! __IRender__

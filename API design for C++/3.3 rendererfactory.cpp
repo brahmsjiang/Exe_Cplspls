@@ -21,9 +21,9 @@ IRender* RenderFactory::CreateRenderer(const std::string& type)
 
 int main(int argc, char* argv[])
 {
-    //IRender* p_opengl = RenderFactory::CreateRenderer("opengl");
-    //IRender* p_directx = RenderFactory::CreateRenderer("directx");
-    //IRender* p_mesa = RenderFactory::CreateRenderer("mesa");
+    IRender* p_opengl = RenderFactory::CreateRenderer("opengl");
+    IRender* p_directx = RenderFactory::CreateRenderer("directx");
+    IRender* p_mesa = RenderFactory::CreateRenderer("mesa");
 
     return 0;
 }
