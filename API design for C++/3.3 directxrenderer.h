@@ -3,7 +3,7 @@
 
 #include "3.3 renderer.h"
 
-class DirectXRenderer : public IRender
+class DirectXRenderer : public IRenderer
 {
 public:
     DirectXRenderer() { std::cout << "DirectXRenderer()" << std::endl; }

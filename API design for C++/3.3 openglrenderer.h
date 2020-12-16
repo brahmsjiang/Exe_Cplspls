@@ -3,7 +3,7 @@
 
 #include "3.3 renderer.h"
 
-class OpenGlRenderer : public IRender
+class OpenGlRenderer : public IRenderer
 {
 public:
     OpenGlRenderer() { std::cout << "OpenGlRenderer()" << std::endl; }

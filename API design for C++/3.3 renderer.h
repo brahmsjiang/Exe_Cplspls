@@ -1,14 +1,14 @@
-#ifndef  __IRender__
-#define __IRender__
+#ifndef  __IRenderer__
+#define __IRenderer__
 
 #include <string>
 
 using namespace std;
 
-class IRender
+class IRenderer
 {
 public:
-    virtual ~IRender() {}
+    virtual ~IRenderer() {}
     virtual bool LoadScene(const std::string& filename) = 0;
     virtual void SetViewportSize(int w, int h) = 0;
     virtual void setCameraPosition(double x, double y, double z) = 0;
@@ -16,4 +16,4 @@ public:
     virtual void Render() = 0;
 };
 
-#endif // ! __IRender__
+#endif // ! __IRenderer__

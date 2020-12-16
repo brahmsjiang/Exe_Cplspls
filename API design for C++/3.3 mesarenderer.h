@@ -3,7 +3,7 @@
 
 #include "3.3 renderer.h"
 
-class MesaRenderer : public IRender
+class MesaRenderer : public IRenderer
 {
 public:
     MesaRenderer() { std::cout << "MesaRenderer()" << std::endl; }

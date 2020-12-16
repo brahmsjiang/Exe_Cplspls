@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <string>
 
 #include "3.3 directxrenderer.h"
@@ -18,7 +18,7 @@ void RenderFactory::UnregisterRenderer(const std::string& type, CreateCallback c
 	mRenderers.erase(type);
 }
 
-IRender* RenderFactory::CreateRenderer(const std::string& type)
+IRenderer* RenderFactory::CreateRenderer(const std::string& type)
 {
 	/*
     if (type == "opengl")
@@ -37,7 +37,7 @@ IRender* RenderFactory::CreateRenderer(const std::string& type)
     return nullptr;
 }
 
-class UserRenderer : public IRender
+class UserRenderer : public IRenderer
 {
 public:
 	UserRenderer() { std::cout << "UserRenderer()" << std::endl; }
@@ -47,7 +47,7 @@ public:
 	virtual void setCameraPosition(double x, double y, double z) {}
 	virtual void setLookAt(double x, double y, double z) {}
 	virtual void Render() { std::cout << "User Render" << std::endl; }
-	static IRender* Create() { return new UserRenderer(); }
+	static IRenderer* Create() { return new UserRenderer(); }
 };
 
 int main(int argc, char* argv[])
@@ -58,11 +58,11 @@ int main(int argc, char* argv[])
     IRender* p_mesa = RenderFactory::CreateRenderer("mesa");
 	*/
 
-	//×¢²áÒ»¸öÐÂµÄäÖÈ¾Æ÷
+	//æ³¨å†Œä¸€ä¸ªæ–°çš„æ¸²æŸ“å™¨
 	RenderFactory::RegisterRenderer("user", UserRenderer::Create);
 
-	//ÎªÐÂäÖÈ¾Æ÷´´½¨Ò»¸öÊµÀý
-	IRender* r = RenderFactory::CreateRenderer("user");
+	//ä¸ºæ¸²æŸ“å™¨åˆ›å»ºä¸€ä¸ªå®žä¾‹
+    IRenderer* r = RenderFactory::CreateRenderer("user");
 	r->Render();
 	delete r;
 
