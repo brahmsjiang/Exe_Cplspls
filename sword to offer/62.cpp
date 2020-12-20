@@ -43,5 +43,6 @@ int LastRemaining2(unsigned int n, unsigned int m)
 int main(int argc, char* argv[])
 {
     auto res1 = LastRemaining(8, 3);
+	auto res2 = LastRemaining2(8, 3);
     return 0;
 }
