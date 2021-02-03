@@ -28,6 +28,7 @@ void callFunc(const Base& ref)
     //ref.func();
     const_cast<Base&>(ref).func();
     //const obj only can call const func
+    //however non-const obj can call non-const & const func  
     ref.constFunc();
 }
 
