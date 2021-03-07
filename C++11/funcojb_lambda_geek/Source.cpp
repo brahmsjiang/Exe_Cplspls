@@ -88,14 +88,14 @@ public:
 	task(int data) : data_(data) {}
 	auto lazy_launch()
 	{
-		return [this, count = get_count()]()
+		return [tmp = *this, count = get_count()]() mutable
 		{
 			ostringstream oss;
-			oss << "Done work " << data_
+			oss << "Done work " << tmp.data_
 				<< "(No. " << count
 				<< ") in thread " << this_thread::get_id() << '\n';
-			msg_ = oss.str();
-			calculate();
+			tmp.msg_ = oss.str();
+			tmp.calculate();
 		};
 	}
 
