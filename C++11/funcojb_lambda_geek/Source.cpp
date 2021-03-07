@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
 	Obj obj3_copy2(obj3);
 
 	vector<int> v1, v2;
-	auto push_data = [&](int n) mutable {
+	auto push_data = [=](int n) mutable {
 		v1.push_back(n);
 		v2.push_back(n);
 		//init_mod = 1;
