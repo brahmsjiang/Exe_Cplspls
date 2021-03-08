@@ -1,5 +1,9 @@
 #pragma once 
 
+#include <iostream>
+#include <string>
+#include <iterator>
+
 class istream_line_reader
 {
 public:
@@ -7,15 +11,15 @@ public:
     {
     public:
         typedef ptrdiff_t difference_type;
-        typedef string value_type;
+        typedef std::string value_type;
         typedef const value_type* pointer;
         typedef const value_type& reference;
-        typedef input_iterator_tag iterator_category;
+        typedef std::input_iterator_tag iterator_category;
 
         iterator() noexcept
             : stream_(nullptr) {}
 
-        explicit iterator(istream& is)
+        explicit iterator(std::istream& is)
             : stream_(&is)
         {
             ++*this; //operator priority from right to left, '++' and '*' seems the same
@@ -53,13 +57,13 @@ public:
         }
 
     private:
-        istream* stream_;
-        string line_;
+		std::istream* stream_;
+		std::string line_;
     };
 
     istream_line_reader() noexcept
         : stream_(nullptr) {}
-    explicit istream_line_reader(istream& is) noexcept
+    explicit istream_line_reader(std::istream& is) noexcept
         : stream_(&is) {}
 
     iterator begin()
@@ -72,6 +76,6 @@ public:
     }
 
 private:
-    istream* stream_;
+	std::istream* stream_;
 };
 
