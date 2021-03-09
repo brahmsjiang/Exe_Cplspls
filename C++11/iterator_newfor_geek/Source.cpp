@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	copy(v2.begin(), v2.end(), ostream_iterator<int>(cout, " "));
     cout << endl;
 
-    std::string filename = "D:\\Learningproject\\Exe_Cplspls\\tmpprj\\analysis";//better to use absolute dir
+    std::string filename = "E:\\Exe_Cplspls\\tmp_proj\\tmp_proj\\analysis";//better to use absolute dir
     std::ifstream iftrm(filename, std::ios::binary);
 
     if (!iftrm.is_open()) {
@@ -29,6 +29,8 @@ int main(int argc, char* argv[])
         auto&& r = istream_line_reader(iftrm);
         for (auto it = r.begin(); it != r.end(); it++) {
             const string& line = *it;
+			if (0 == it->compare("6666\r"))
+				cout << "equal to 6666" << endl;
             cout << line << endl;
         }
 #endif

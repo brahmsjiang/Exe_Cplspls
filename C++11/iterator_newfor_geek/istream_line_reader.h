@@ -37,7 +37,8 @@ public:
         iterator& operator++()//front++, return left val(&)
         {
             getline(*stream_, line_);
-            if (!*stream_) {
+            if ((*stream_).eof())//or "!*stream_", iterator stores ifstream, when iterator calls ++, getline was called actually 
+			{
                 stream_ = nullptr;
             }
             return *this;
