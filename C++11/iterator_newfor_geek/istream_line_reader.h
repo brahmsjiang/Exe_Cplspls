@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <iterator>
+#include <fstream>
 
 class istream_line_reader
 {
@@ -19,7 +20,7 @@ public:
         iterator() noexcept
             : stream_(nullptr) {}
 
-        explicit iterator(std::istream& is)
+        explicit iterator(std::ifstream& is)
             : stream_(&is)
         {
             ++*this; //operator priority from right to left, '++' and '*' seems the same
@@ -33,7 +34,7 @@ public:
         {
             return &line_;
         }
-        iterator& operator++()
+        iterator& operator++()//front++, return left val(&)
         {
             getline(*stream_, line_);
             if (!*stream_) {
@@ -41,7 +42,7 @@ public:
             }
             return *this;
         }
-        iterator operator++(int)
+        iterator operator++(int)//rear++, return right val
         {
             iterator temp(*this);
             ++*this;
@@ -57,13 +58,13 @@ public:
         }
 
     private:
-		std::istream* stream_;
+		std::ifstream* stream_;
 		std::string line_;
     };
 
     istream_line_reader() noexcept
         : stream_(nullptr) {}
-    explicit istream_line_reader(std::istream& is) noexcept
+    explicit istream_line_reader(std::ifstream& is) noexcept
         : stream_(&is) {}
 
     iterator begin()
@@ -76,6 +77,6 @@ public:
     }
 
 private:
-	std::istream* stream_;
+	std::ifstream* stream_;
 };
 
