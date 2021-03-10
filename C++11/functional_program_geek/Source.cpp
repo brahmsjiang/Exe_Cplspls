@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <numeric> //accumulate 
+//#include <execution>
 
 using namespace std;
 
@@ -57,6 +58,16 @@ int count_lines_transform(const char** begin, const char** end)
     transform(begin, end, count.begin(), count_file_transform);
     return accumulate(count.begin(), count.end(), 0);//return accumulate val from begin to end, based on the initial val of the sum
 }
+
+/* C++17
+int count_lines_func(const char** begin, const char** end)
+{
+	vector<int> count(end - begin);//initialize with (end - begin) elements
+
+	transform(execution::par, begin, end, count.begin(), count_file_transform);
+	return reduce(execution::par, count.begin(), count.end());//return accumulate val from begin to end, based on the initial val of the sum
+}
+*/
 
 int main(int argc, const char** argv)
 {
