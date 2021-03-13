@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <utility> //std::move
 
 using namespace std;
 
@@ -60,6 +61,10 @@ public:
     {
         cout << "~base()\n";
     }
+	void func()
+	{
+		cout << "base::func()\n";
+	}
 };
 
 class child : public base
@@ -69,6 +74,10 @@ public:
     {
         cout << "~child()\n";
     }
+	void func()
+	{
+		cout << "child::func()\n";
+	}
 };
 
 class base1
@@ -78,6 +87,10 @@ public:
     {
         cout << "~base1()\n";
     }
+	virtual void func()
+	{
+		cout << "base1::func()\n";
+	}
 };
 
 class child1 : public base1
@@ -87,7 +100,83 @@ public:
     {
         cout << "~child1()\n";
     }
+	virtual void func()
+	{
+		cout << "child1::func()\n";
+	}
 };
+
+class Obj
+{
+public:
+	Obj() { cout << "Obj()" << endl; }
+	Obj(const Obj&) { cout << "Obj(const Obj&)" << endl; }
+	Obj(Obj&&) { cout << "Obj(Obj&&)" << endl; }
+	void func() { cout << "func()" << endl; }
+};
+
+Obj simple()
+{
+	Obj obj;//has NRVO
+	return obj;
+}
+
+Obj& simple1()
+{
+	Obj obj;//has NRVO
+	return obj;
+}
+
+Obj simple_with_move()
+{
+	Obj obj;
+	return std::move(obj);//forbidden NRVO
+}
+
+Obj complicated(int n)
+{
+	Obj obj1;
+	Obj obj2;
+	if (n % 2 == 0)//has branch, no NRVO
+	{
+		return obj1;
+	}
+	else {
+		return obj2;
+	}
+}
+
+void foo(const shape&)
+{
+	cout << "foo(const shape&)" << endl;
+}
+
+void foo(const shape&&)
+{
+	cout << "foo(const shape&&)" << endl;
+}
+
+#if 0
+void bar(const shape& s)
+{
+	cout << "bar(const shape&)" << endl;
+	foo(s);
+}
+
+void bar(shape&& s)
+{
+	cout << "bar(const shape&&), use move?" << endl;
+	//foo(s);
+	foo(std::move(s));
+}
+#endif
+
+
+template <typename T>
+void bar(T&& s)
+{
+	foo(std::forward<T>(s));
+}
 
 int main(int argc, char* argv[])
 {
@@ -148,7 +237,7 @@ int main(int argc, char* argv[])
     {
         cout << "1=====>" << endl;
         base& b1 = child();//T& bind with child won't cause memory leak
-        //child();
+        
         cout << "1<=====" << endl;
     }
     {
@@ -165,8 +254,25 @@ int main(int argc, char* argv[])
     {
         cout << "2=====>" << endl;
         base1& b1 = child1();
+		b1.func();
         cout << "2<=====" << endl;
     }
 
+	cout << "*** 1 ***" << endl;
+	auto obj1 = simple();
+	cout << "*** 11 ***" << endl;
+	auto obj11 = simple1();
+	obj11.func();
+	cout << "*** 2 ***" << endl;
+	auto obj2 = simple_with_move();
+	cout << "*** 3 ***" << endl;
+	auto obj3 = complicated(42);
+
+	cout << "1-------------------" << endl;
+	bar(circle());
+	cout << "2-------------------" << endl;
+	circle temp;
+	bar(temp);
+	bar(circle());
 }
 
