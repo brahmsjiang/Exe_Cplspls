@@ -19,9 +19,16 @@ class userdefined
 {
 public:
     userdefined(int v) : val(v) {}
+	bool operator<(const userdefined& rhs) const
+	{
+		cout << "userdefined::operator<" << endl;
+		less<int> lessfunc;
+		return lessfunc(this->val, rhs.val);
+	}
     int val;
 };
 
+//或者针对特定类型对less进行特化
 template<>
 struct less<userdefined> {
     bool operator()(const userdefined& x, const userdefined& y) const
@@ -37,11 +44,16 @@ int main(int argc, char* argv[])
     {
         userdefined user6(6), user1(1), user3(3), user2(2);
         vector<userdefined> vUser{ user6,user1,user3,user2 };
-        //for sort, third para accepts a binary function
+		//for sort, no third binary func specified, operator must provide operator<
+		sort(vUser.begin(), vUser.end());
+		cout << "------------\n";
+		vUser = { user6,user1,user3,user2 };
+		//for sort, third para accepts a binary function
+		//less<userdefined>() is just a temp obj
         sort(vUser.begin(), vUser.end(), less<userdefined>());
 
         vector<int> v{ 13,6,4,11,29 };
-        sort(v.begin(), v.end());//default is less
+        sort(v.begin(), v.end());//default compare is less
         sort(v.begin(), v.end(), greater<int>());
 
         auto hp = hash<int*>();
@@ -82,9 +94,44 @@ int main(int argc, char* argv[])
         mmp.insert(pair<string, int>("four", -4));
         mmp.emplace("four", 0);//construct directly, err: mmp.emplace({ "four", 0 });
         cout << "second: " << mmp.find("four")->second << endl;
-        cout << "lower_bound second: " << mmp.lower_bound("four")->second << endl;//!(x < k)
-        cout << "upper_bound second: " << mmp.upper_bound("four")->second << endl;//k < x
-    }
+        cout << "lower_bound second: " << mmp.lower_bound("four")->second << endl;//第一个不小于键k的元素
+        cout << "upper_bound second: " << mmp.upper_bound("four")->second << endl;//第一个大于键k的元素
+		cout << "--upper_bound second: " << (--mmp.upper_bound("four"))->second << endl;
+		
+		multimap<string, int>::iterator lower, upper;
+		//std::tie创建左值引用的tuple，或用于解包pair,因为tuple拥有从pair的转换赋值
+		{
+			struct S {
+				int n;
+				std::string s;
+				float d;
+				bool operator<(const S& rhs) const
+				{
+					// 比较n与rhs.n; s与rhs.s,d与rhs.d
+					return std::tie(n, s, d) < std::tie(rhs.n, rhs.s, rhs.d);
+				}
+			};
+
+			set<S> set_of_s;
+			S val{ 42,"Test",3.14 };
+			set<S>::iterator iter;
+			bool inserted;
+			//解包insert的返回值iter 与 inserted
+			std::tie(iter, inserted) = set_of_s.insert(val);
+		}
+		//equal_range returns a pair
+		std::tie(lower, upper) = mmp.equal_range("four");//半开半闭
+		assert(lower != upper);
+
+		using pairIt = multimap<string, int>::iterator;
+		pairIt lower1, upper1;
+		std::pair<pairIt, pairIt> resp = mmp.equal_range("four");
+		lower1 = resp.first;
+		upper1 = resp.second;
+		cout << "----------\n";
+		cout << lower1->second << endl;//lower is a iter of map
+		cout << (--upper1)->second << endl;//map/list/set的迭代器都是双向迭代器
+	}
 
 
 
