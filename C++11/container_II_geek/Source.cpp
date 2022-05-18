@@ -11,9 +11,29 @@
 #include <queue>        //priotiry_queue
 #include <set>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <complex>
+#include <iterator>     //std::size
+#include <array>
 
 
 using namespace std;
+
+//一般不允许用户向std添加内容
+namespace std {
+
+    template <typename T>
+    struct hash<complex<T>>
+    {
+        size_t operator()(const complex<T>& v) const noexcept
+        {
+            cout << "hash<complex<T>\n";
+            hash<T> h;
+            return h(v.real()) + h(v.imag());
+        }
+    };
+}
 
 class userdefined
 {
@@ -38,6 +58,11 @@ struct less<userdefined> {
     }
 };
 
+void test(int arr[])
+{
+    //compile err
+    //cout << std::size(arr) << endl;
+}
 
 int main(int argc, char* argv[])
 {
@@ -132,8 +157,27 @@ int main(int argc, char* argv[])
 		cout << lower1->second << endl;//lower is a iter of map
 		cout << (--upper1)->second << endl;//map/list/set的迭代器都是双向迭代器
 	}
+    {
+        unordered_set<int> s{ 1,1,2,3,5,8,13,21 };
+        unordered_map<complex<double>, double> umc{ {{1.0, 1.0}, 1.4142},{ { 3.0, 4.0 }, 5.0 } };
+    }
+    {
+        int arr[] = { 1,2,3,4,5 };
+        cout << "The array length is " << std::size(arr) << endl;
+        test(arr);
+
+        typedef char mykey_t[8];
+        //C数组也没有良好复制行为，无法作为map/unordered_map的键
+        map<mykey_t, int> mp;
+        mykey_t myket{ "hello" };
+        //mp[myket] = 5;//compile err
 
 
+        typedef std::array<char, 8> mykey_t2;
+        map<mykey_t2, int> mp2;
+        mykey_t2 myket2{ "hello" };
+        mp2[myket2] = 5;//ok
+    }
 
 
 
