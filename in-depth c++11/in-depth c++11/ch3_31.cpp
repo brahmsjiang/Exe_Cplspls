@@ -1,7 +1,8 @@
-#include <type_traits>
 #include <iostream>
 #include <string>
 #include <utility>
+#include <functional>
+#include <type_traits>
 
 using namespace std;
 
@@ -87,6 +88,38 @@ void TestOptional() {
     
     op.Emplace(3, 4);
     t = *op;
+}
+
+template<typename T>
+struct Lazy
+{
+    Lazy() {}
+    template <typename Func, typename... Args>
+    Lazy(Func& f, Args&&... args)
+    {
+        m_func = [&f, &args...]{ return f(args...); };
+    }
+    T& Value()
+    {
+        if (!m_value.IsInit())
+        {
+            m_value = m_func();
+        }
+        return *m_value;
+    }
+    bool IsValueCreated() const
+    {
+        return m_value.IsInit();
+    }
+private:
+    function<T()> m_func;
+    Optional<T> m_value;
+};
+
+template<class Func, typename... Args>
+Lazy<typename std::invoke_result<Func(Args...)>::type> lazy(Func&& func, Args&&... args)
+{
+    return Lazy<typename std::invoke_result<Func(Args...)>::type>(forward<Func>(func), forward<Args>(args)...);
 }
 
 int main(int argc, const char * argv[]) {
