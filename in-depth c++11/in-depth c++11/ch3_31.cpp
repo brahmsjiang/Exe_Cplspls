@@ -124,7 +124,7 @@ Lazy<typename std::invoke_result<Func(Args...)>::type> lazy(Func&& func, Args&&.
 
 int main(int argc, const char * argv[]) {
     
-    TestOptional();
+    TestOptional();//
     
     return 0;
 }
