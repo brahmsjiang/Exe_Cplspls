@@ -32,7 +32,7 @@ public:
     explicit operator bool() const {
         return IsInit();
     }
-    T const& operator*() const {
+    const T& operator*() const {
         if (IsInit())
             return *((T*)(&m_data));
         throw logic_error("is not init");
@@ -100,7 +100,7 @@ struct Lazy
     {
         m_func = [&f, &args...]{ return f(args...); };
     }
-    T& Value()
+    const T& Value()
     {
         if (!m_value.IsInit())
         {
@@ -145,7 +145,7 @@ int Foo(int x) { return x * 2; }
 
 int main(int argc, const char * argv[]) {
     
-    TestOptional();
+    //TestOptional();
     
 	int y = 4;
 	auto lazyer1 = lazy(Foo, y);
@@ -161,5 +161,6 @@ int main(int argc, const char * argv[]) {
 	MyStruct2 t;
 	t.Load();
 
+	system("pause");
     return 0;
 }
