@@ -3,6 +3,7 @@
 #include <utility>
 #include <functional>
 #include <type_traits>
+#include <memory>
 
 using namespace std;
 
@@ -117,14 +118,48 @@ private:
 };
 
 template<class Func, typename... Args>
-Lazy<typename std::invoke_result<Func(Args...)>::type> lazy(Func&& func, Args&&... args)
+Lazy<typename std::result_of<Func(Args...)>::type> lazy(Func&& func, Args&&... args)
 {
-    return Lazy<typename std::invoke_result<Func(Args...)>::type>(forward<Func>(func), forward<Args>(args)...);
+    return Lazy<typename std::result_of<Func(Args...)>::type>(forward<Func>(func), forward<Args>(args)...);
 }
+
+struct BigObject
+{	
+	BigObject() {
+		cout << "lazy load big object" << endl;
+	}
+};
+
+struct MyStruct2
+{
+	MyStruct2() {
+		m_obj = lazy([] {return make_shared<BigObject>();  });
+	}
+	void Load() {
+		m_obj.Value();
+	}
+	Lazy<shared_ptr<BigObject>> m_obj;
+};
+
+int Foo(int x) { return x * 2; }
 
 int main(int argc, const char * argv[]) {
     
-    TestOptional();//
+    TestOptional();
     
+	int y = 4;
+	auto lazyer1 = lazy(Foo, y);
+	cout << lazyer1.Value() << endl;
+
+	Lazy<int> lazyer2 = lazy([] {return 12; });
+	cout << lazyer2.Value() << endl;
+
+	function<int(int)> f = [](int x) {return x + 3; };
+	auto lazyer3 = lazy(f, 3);
+	cout << lazyer3.Value() << endl;
+
+	MyStruct2 t;
+	t.Load();
+
     return 0;
 }
