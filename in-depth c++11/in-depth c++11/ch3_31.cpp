@@ -4,6 +4,7 @@
 #include <functional>
 #include <type_traits>
 #include <memory>
+#include <vector>
 
 using namespace std;
 
@@ -143,9 +144,40 @@ struct MyStruct2
 
 int Foo(int x) { return x * 2; }
 
+// v1 is NOT a function parameter pack :
+template <typename... Types>
+void func1(std::vector<Types...> v1)
+{}
+// v2 IS a function parameter pack:
+template <typename... Types>
+void func2(std::vector<Types>... v2)
+{}
+
+template<typename... Args>
+struct function_traits
+{
+};
+
+int fool1() { return -1; }
+
+struct fool2 {
+	int operator()(){ return 0; }
+};
+
+struct fool3 {
+	int operator()() { return 0; }
+};
+
+fool3 fool3_var;
+
+decltype(fool1) fool1_var;
+decltype(&fool2::operator()) fool2_var;
+decltype(fool3_var()) fool3_var_;
+
 int main(int argc, const char * argv[]) {
     
-    //TestOptional();
+	function_traits<> funcTrait;
+	cout << typeid(fool2_var).name() << endl;
     
 	int y = 4;
 	auto lazyer1 = lazy(Foo, y);
