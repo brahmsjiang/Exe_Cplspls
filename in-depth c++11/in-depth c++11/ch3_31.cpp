@@ -175,19 +175,21 @@ decltype(&fool2::operator()) fool2_var;
 decltype(fool3_var()) fool3_var_;
 
 template<typename T, typename... Rest>
-struct Contains: std::true_type {};
+struct Contains;
 
-template <typename T, typename Head, typename... Rest>
+template<typename T> //partial specialization
+struct Contains<T, T>: std::true_type {};
+
+template <typename T, typename Head, typename... Rest> //partial specialization
 struct Contains<T, Head, Rest...>
 : std::conditional<std::is_same<T, Head>::value, std::true_type, Contains<T, Rest...>>::type{};
 
-template<typename T>
+template<typename T> //partial specialization
 struct Contains<T>: std::false_type {};
 
 
-
 int main(int argc, const char * argv[]) {
-	cout << Contains<int, char, float>::value << endl;
+	cout << Contains<int, char, int>::value << endl;
 
 	function_traits<> funcTrait;
 	cout << typeid(fool2_var).name() << endl;
