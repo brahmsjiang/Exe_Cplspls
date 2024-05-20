@@ -136,9 +136,22 @@ void TestVariant()
 	v.Is<int>();//true
 }
 
-int main(int argc, const char * argv[]) {
+template<typename... Args>
+void print(Args...args);
 
-	TestVariant();
+template<T>
+void print<>() { cout << "template<>" << endl; }
+
+template<typename T, typename... Args>
+void print(T t, Args...args)
+{ 
+	cout << "template<typename T, typename... Args>" << endl;
+	print(args...);
+}
+
+int main(int argc, const char * argv[]) {
+	print(1, 2.2);
+	//TestVariant();
 
 	//system("pause");
 	return 0;
