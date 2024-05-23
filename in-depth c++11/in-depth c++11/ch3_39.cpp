@@ -36,6 +36,56 @@ namespace detail
 	};
 }
 
+namespace details
+{
+	template<int...>
+	struct IndexTuple{};
+
+	template<int N, int... Indexes>
+	struct make_indexes : make_indexes<N-1, N-1, Indexes...>{};
+
+	//termination condition
+	template<int... Indexes>
+	struct make_indexes<0, Indexes...> {
+		using type = IndexTuple<Indexes...>;
+	};
+
+	template<typename Func, typename Last>
+	void for_each_impl(Func&& f, Last&& last) {
+		f(last);
+	}
+
+	template<typename Func, typename First, typename... Rest>
+	void for_each_impl(Func&& f, First&& first, Rest&&... rest) {
+		f(first);
+		for_each_impl(forward<Func>(f), rest...);
+	}
+
+	template<typename Func, int... Indexes, typename... Args>
+	void for_each_helper(Func&& f, IndexTuple<Indexes...>, tuple<Args...>&& tup) {
+		for_each_impl(forward<Func>(f), forward<Args>(get<Indexes>(tup))...);
+	}
+} // namespace details
+
+template<typename Func, typename Tuple>
+void tp_for_each(Func&& f, Tuple& tup)
+{
+	using namespace details;
+	for_each_helper(forward<Func>(f), typename make_indexes<tuple_size<Tuple>::value>::type(), forward<Tuple>(tup));
+}
+
+template<typename Func, typename... Args>
+void tp_for_each(Func&& f, tuple<Args...>&& tup) {
+	using namespace details;
+	for_each_helper(forward<Func>(f), typename make_indexes<tuple_size<tuple<Args...> >::value>::type(), forward<tuple<Args...> >(tup));
+}
+
+struct Functor {
+	template<typename T>
+	void operator()(T& t) const { cout << t << endl; }
+};
+
+
 template<typename T, typename... Args>
 int find_index(tuple<Args...> const& t, T&& val)
 {
