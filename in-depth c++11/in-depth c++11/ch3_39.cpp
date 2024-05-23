@@ -165,6 +165,7 @@ void testFunc1(tuple<T>&& par)
 	cout << get<0>(par) << endl;
 }
 
+
 int main(int argc, const char * argv[]) {
 	//TestFindIndex();
 
@@ -180,6 +181,10 @@ int main(int argc, const char * argv[]) {
 	//testFunc1(tupstr);//compile err
 	testFunc1(move(tupstr));
 	testFunc1(forward<Tupstr>(tupstr));
+	int lval = 1;
+	int&& rval = 1;
+	//int&& rval1 = lval;//compile err
+	int&& rval1 = forward<int>(lval);
 
 	system("pause");
 	return 0;
