@@ -9,7 +9,7 @@
 #include <tuple>
 
 using namespace std;
-
+/*
 namespace detail
 {
 	template<typename T, typename U>
@@ -117,12 +117,10 @@ void TestTuple() {
 	Tuple tp = make_tuple(1, 2, "test", 3);
 	const size_t length = tuple_size<Tuple>::value;
 
-	GetArgByIndex<0>(1, tp);
-	/*
+
 	for (size_t i = 0; i < length; ++i) {
 		GetArgByIndex<0>(i, tp);
 	}
-	*/
 	//GetArgByIndex(4, tp);
 }
 
@@ -148,18 +146,41 @@ void TestTuple1() {
 	Tuple tp = make_tuple(1, 2.1);
 	const size_t length = tuple_size<Tuple>::value;
 
-	GetArgByIndex1(1, tp);
-	/*
 	for (size_t i = 0; i < length; ++i) {
 	GetArgByIndex<0>(i, tp);
 	}
-	*/
+
+}
+*/
+
+template<typename T>
+void testFunc(T&& par)
+{
+	cout << par << endl;
+}
+
+template<typename T>
+void testFunc1(tuple<T>&& par)
+{
+	cout << get<0>(par) << endl;
 }
 
 int main(int argc, const char * argv[]) {
 	//TestFindIndex();
 
-	TestTuple1();
-	//system("pause");
+	//TestTuple1();
+	testFunc(string("ppt"));
+	string strppt = "ppt";
+	testFunc(strppt);
+	testFunc(move(strppt));
+	///
+	using Tupstr = tuple<string>;
+	Tupstr tupstr = make_tuple<string>("tup_str");
+	testFunc1(make_tuple<string>("tup_str"));
+	//testFunc1(tupstr);//compile err
+	testFunc1(move(tupstr));
+	testFunc1(forward<Tupstr>(tupstr));
+
+	system("pause");
 	return 0;
 }
