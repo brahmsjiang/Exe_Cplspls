@@ -16,6 +16,8 @@ shared_ptr<T> make_shared_array(size_t size)
 	return shared_ptr<T>(new T[size], default_delete<T[]>());
 }
 
+///////
+namespace myUnique {
 template<typename T, typename... Args> inline
 typename enable_if < !is_array<T>::value, unique_ptr<T> >::type
 make_unique(Args&&... args) {
@@ -32,6 +34,8 @@ make_unique(size_t size) {
 template<typename T, typename... Args>
 typename enable_if<extent<T>::value != 0, void>::type
 make_unique(Args&&...) = delete;
+
+}
 
 int main(int argc, const char * argv[]) {
 	
@@ -63,5 +67,9 @@ int main(int argc, const char * argv[]) {
 		shared_ptr<A> spa2(spa1);
 		cout << "spa2.use_count()" << spa2.use_count() << endl;
 	}
+
+	unique_ptr<int[][5]> arr1 = myUnique::make_unique<int[][5]>(2);
+	auto arr2 = new int[][5]();
+
 	return 0;
 }
