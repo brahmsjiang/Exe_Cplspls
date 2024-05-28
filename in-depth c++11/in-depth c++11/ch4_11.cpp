@@ -37,6 +37,20 @@ make_unique(Args&&...) = delete;
 
 }
 
+struct MyDeleter
+{
+	void operator()(int* p) {
+		cout << "delete" << endl;
+	}
+};
+
+
+template<typename T, size_t N = 1>
+auto creatArray() {
+	typedef typename remove_extent<T>::type U;
+	return new U[N]();
+}
+
 int main(int argc, const char * argv[]) {
 	
 	shared_ptr<int> p(new int(1), [](int* p) {delete p; });
@@ -69,7 +83,19 @@ int main(int argc, const char * argv[]) {
 	}
 
 	unique_ptr<int[][5]> arr1 = myUnique::make_unique<int[][5]>(2);
-	auto arr2 = new int[][5]();
+	int size;
+	//int (*arr2)[size] = new int[5][size]();
+	auto arr2 = creatArray<int[3][5], 2>();
+
+	unique_ptr<int[]> ptr1{new int [10]};
+	ptr1[9] = 9;
+	shared_ptr<int[]> ptr2{new int [10], [](int* p){delete []p;}};
+	//unique_ptr<int[]> ptr3{new int [10], [](int* p){delete []p;}};//compile err, unique_ptr's deleter should appoint type
+	unique_ptr<int[], void(*)(int*)> ptr3{new int [10], [](int* p){delete []p;}};
+	//unique_ptr<int[], void(*)(int*)> ptr4{new int [10], [&](int* p){delete []p;}};//compile err, lambda with capture can't convert to pointer
+	unique_ptr<int[], function<void(int*)> > ptr4{new int [10], [&](int* p){delete []p;}};
+
+	unique_ptr<int, MyDeleter> ppp{new int(1)};
 
 	return 0;
 }
