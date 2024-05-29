@@ -62,7 +62,32 @@ void f() {
 	}
 }
 
+shared_ptr<void> Guard(void* p)
+{
+	//shared_ptr<void> sp(p, [](void* p){delete p;});
+	//return sp;
+	return shared_ptr<void>(p, [](void* p){delete p;});
+}
+
+shared_ptr<int> Guard(int* p)
+{
+	//shared_ptr<void> sp(p, [](void* p){delete p;});
+	//return sp;
+	return shared_ptr<int>(p);
+}
+
+int f_int() {
+	return int(1);
+}
+
+#define GUARD(p) shared_ptr<void> p##p(p, [](void* p){delete p;cout<<"delete p"<<endl;});
+
+
 int main(int argc, const char * argv[]) {
+	void* who = new int(1);
+	GUARD(who);
+	whowho = nullptr;
+
 	{
 		shared_ptr<int> sp = make_shared<int>(42);
 		wp = sp;
