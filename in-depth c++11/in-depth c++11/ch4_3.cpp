@@ -64,9 +64,12 @@ void f() {
 
 shared_ptr<void> Guard(void* p)
 {
-	//shared_ptr<void> sp(p, [](void* p){delete p;});
-	//return sp;
 	return shared_ptr<void>(p, [](void* p){delete p;});
+}
+
+unique_ptr<void, void(*)(void*)> Guard2(void* p)
+{
+	return unique_ptr<void, void(*)(void*)>(p, [](void* p){delete p;});
 }
 
 shared_ptr<int> Guard(int* p)
