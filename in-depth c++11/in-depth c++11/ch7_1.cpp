@@ -51,10 +51,20 @@ public:
 	}
 };
 
+class class_a {
+public:
+	double m_double{1.0};
+	string m_string;
+
+	class_a() {}
+	class_a(string str) : m_string{str} {}
+	//class_a(string str, double db1) : class_a(str), m_double{db1} {}
+	class_a(string str, double db1) : class_a(str) { m_double = db1; }
+};
+
 
 int main(int argc, const char * argv[]) {
 	
-
 
 	return 0;
 }
