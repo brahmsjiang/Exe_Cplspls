@@ -58,13 +58,45 @@ public:
 
 	class_a() {}
 	class_a(string str) : m_string{str} {}
-	//class_a(string str, double db1) : class_a(str), m_double{db1} {}
+	//class_a(string str, double db1) : class_a(str), m_double{db1} {}	//err
 	class_a(string str, double db1) : class_a(str) { m_double = db1; }
 };
 
+struct Base {
+	int x;
+	double y;
+	string s;
+	
+	Base(int i) : x(i),y(0.0) {}
+	Base(int i, double j) : x(i),y(j) {}
+	Base(int i, double j, const string& str) : x(i),y(j),s(str) {}
+	void Fun() {cout<<"call in Base"<<endl;}
+};
+
+struct Derived: Base {};
+
+struct Derived1: Base
+{
+	Derived1(int i) : Base(i) {}
+	Derived1(int i, double j) : Base(i, j) {}
+	Derived1(int i, double j, const string& str) : Base(i, j, str) {}
+};
+
+struct Derived2: Base
+{
+	using Base::Base;
+	using Base::Fun;
+	void Fun(int a) {cout<<"call in Derived2"<<endl;}
+};
 
 int main(int argc, const char * argv[]) {
-	
+	//Derived(1, 2.5, "ok");	can't find appropriate construct func
+	Derived1(1, 2.5, "ok");
+	Derived2(1, 2.5, "ok");
+	Derived2(1);
+	Derived2 der2(1);
+	der2.Fun();
+
 
 	return 0;
 }
