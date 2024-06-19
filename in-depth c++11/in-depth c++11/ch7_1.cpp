@@ -97,6 +97,20 @@ int main(int argc, const char * argv[]) {
 	Derived2 der2(1);
 	der2.Fun();
 
+	string str = "D:\A\B\test.text";
+	cout << str << endl;
+	string str1 = "D:\\A\\B\\test.text";
+	cout << str1 << endl;
+	string str2 = R"(D:\A\B\test.text)";
+	cout << str2 << endl;
+	string str3 = 
+	R"(<HTML>
+	<HEAD>
+	</HEAD>
+	</HTML>
+	)";
+	cout << str3 << endl;
+	string str4 = R"test(D:\A\B\test.text)";
 
 	return 0;
 }
