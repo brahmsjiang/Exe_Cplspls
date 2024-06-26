@@ -46,6 +46,8 @@ struct A {
 	A(int a, int b): avg((a+b)/2) {}
 };
 
+//templaet<size_t len, size_ align>
+//struct aligned_storage;
 typedef std::aligned_storage<sizeof(A), alignof(A)>::type Aligned_A;
 
 int main(int argc, const char * argv[]) {
