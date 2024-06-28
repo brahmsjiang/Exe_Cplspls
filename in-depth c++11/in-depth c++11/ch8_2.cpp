@@ -27,7 +27,7 @@ protected:
 };
 class ConcreteObserver : public Observer {
 	void Update(Subject* theChangedSubject) {
-
+		cout << "val is: " << theChangedSubject << endl;
 	}
 };
 
@@ -42,7 +42,7 @@ public:
 	}
 	virtual void Notify() {
 		for (auto i = _observers->begin(); i != _observers->end(); i++) {
-			i->Update(this);
+			(*i)->Update(this);
 		}
 	}
 protected:
@@ -51,15 +51,13 @@ private:
 	std::list<Observer*> *_observers;//observers list
 };
 class ConcreteSubject : public Subject {
-private:
+public:
 	int val = 0;
 };
 
 
 
 int main(int argc, const char * argv[]) {
-	string str = "bb";
-
 
 	return 0;
 }
