@@ -100,7 +100,7 @@ public:
 	template<typename...Args>
 	void Notify(Args&&... args) {
 		for (auto& it : m_connections) {
-			cout << "cur k: " << it.first << endl;
+			cout << "traverse, cur k: " << it.first << endl;
 			it.second(std::forward<Args>(args)...);
 		}
 	}
@@ -112,7 +112,7 @@ private:
 	int Assign(F&& f) {
 		int k = m_observerId++;
 		m_connections.emplace(k, std::forward<F>(f));
-		cout << "new k: " << k << endl;
+		cout << "assign, new k: " << k << endl;
 		return k;
 	}
 private:
@@ -140,13 +140,18 @@ int main(int argc, const char * argv[]) {
 	subject.Notify();
 	cout << "/////////////////////////" << endl;
 	Events<std::function<void(int, int)>> myevent;
+
 	auto key = myevent.Connect(print);
+
 	stA t;
 	auto lambdakey = myevent.Connect([&t](int a, int b){t.a=a; t.b=b; t.print();});
+
 	std::function<void(int, int)> f = std::bind((void(stA::*)(int,int))&stA::print, &t, std::placeholders::_1, std::placeholders::_2);
 	auto bindkey = myevent.Connect(f);
+
 	int a = 1,b = 2;
 	myevent.Notify(a, b);
+
 	myevent.Size();
 	myevent.Disconnect(key);
 	myevent.Disconnect(lambdakey);
