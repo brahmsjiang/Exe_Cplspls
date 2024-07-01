@@ -103,11 +103,15 @@ public:
 			it.second(std::forward<Args>(args)...);
 		}
 	}
+	void Size() {
+		cout << "size: " << m_connections.size() << endl;
+	}
 private:
 	template<typename F>
 	int Assign(F&& f) {
 		int k = m_observerId++;
 		m_connections.emplace(k, std::forward<F>(f));
+		cout << "new k: " << k << endl;
 		return k;
 	}
 private:
@@ -138,10 +142,14 @@ int main(int argc, const char * argv[]) {
 	stA t;
 	auto lambdakey = myevent.Connect([&t](int a, int b){t.a=a; t.b=b;});
 	std::function<void(int, int)> f = std::bind(&stA::print, &t, std::placeholders::_1, std::placeholders::_2);
-	myevent.Connect(f);
+	auto bindkey = myevent.Connect(f);
 	int a = 1,b = 2;
 	myevent.Notify(a, b);
+	myevent.Size();
 	myevent.Disconnect(key);
+	myevent.Disconnect(lambdakey);
+	myevent.Disconnect(bindkey);
+	myevent.Size();
 
 	return 0;
 }
