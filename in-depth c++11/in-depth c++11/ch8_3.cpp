@@ -107,9 +107,10 @@ struct Visitor1<T>
 //////////////////
 struct stA;
 struct stB;
+struct stC;	//add
 struct Base
 {
-	typedef Visitor1<stA, stB> MyVisitor;
+	typedef Visitor1<stA, stB, stC> MyVisitor;	//modify
 	virtual void Accept(MyVisitor&) = 0;
 };
 struct stA: Base
@@ -126,6 +127,13 @@ struct stB: Base
 		v.Visit(*this);
 	}
 };
+struct stC: Base	//add
+{
+	string val;
+	void Accept(Base::MyVisitor& v) {
+		v.Visit(*this);
+	}
+};
 struct PrintVisitor: Base::MyVisitor
 {
 	void Visit(const stA& a) {
@@ -134,18 +142,19 @@ struct PrintVisitor: Base::MyVisitor
 	void Visit(const stB& b) {
 		cout << "from stB: " << b.val << endl;
 	}
+	void Visit(const stC& c) {	//add
+		cout << "from stC: " << c.val << endl;
+	}
 };
 
 void TestVisitor1() {
 	PrintVisitor vis;
-	stA a;
-	a.val = 8.97;
-	stB b;
-	b.val = 8;
-	Base* base = &a;
-	base->Accept(vis);
-	base = &b;
-	base->Accept(vis);
+	stA a; a.val = 8.97;
+	stB b; b.val = 8;
+	stC c; c.val = "strc";	//add
+	Base* base = &a; base->Accept(vis);
+	base = &b; base->Accept(vis);
+	base = &c; base->Accept(vis);	//add
 }
 
 int main(int argc, const char * argv[]) {
