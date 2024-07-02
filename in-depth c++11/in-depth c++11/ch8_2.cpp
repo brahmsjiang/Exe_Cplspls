@@ -82,8 +82,8 @@ protected:
 	NonCopyable& operator=(const NonCopyable&) = delete;
 };
 
-template<typename Func>
-class Events: NonCopyable
+template<typename Func>		//Func<===>observer, parameters of Func<===>data changed
+class Events: NonCopyable	//Events<===>subject
 {
 public:
 	Events() {}
