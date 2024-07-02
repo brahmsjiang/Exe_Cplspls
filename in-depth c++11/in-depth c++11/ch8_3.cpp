@@ -19,12 +19,14 @@ using namespace std;
 
 struct ConcreteElement1;
 struct ConcreteElement2;
+struct ConcreteElement3;	//add
 
 struct Visitor
 {
 	virtual ~Visitor() {}
 	virtual void Visit(ConcreteElement1* element) = 0;
 	virtual void Visit(ConcreteElement2* element) = 0;
+	virtual void Visit(ConcreteElement3* element) = 0;	//add
 };
 struct Element
 {
@@ -40,6 +42,9 @@ struct ConcreteVisitor1 : public Visitor
 	void Visit(ConcreteElement2* element) {
 		cout << "ConcreteVisitor1 visit ConcreteElement2" << endl;
 	}
+	void Visit(ConcreteElement3* element) {	//add
+		cout << "ConcreteVisitor1 visit ConcreteElement3" << endl;
+	}
 };
 struct ConcreteVisitor2 : public Visitor
 {
@@ -48,6 +53,9 @@ struct ConcreteVisitor2 : public Visitor
 	}
 	void Visit(ConcreteElement2* element) {
 		cout << "ConcreteVisitor2 visit ConcreteElement2" << endl;
+	}
+	void Visit(ConcreteElement3* element) {	//add
+		cout << "ConcreteVisitor2 visit ConcreteElement3" << endl;
 	}
 };
 struct ConcreteElement1 : public Element
@@ -62,16 +70,25 @@ struct ConcreteElement2 : public Element
 		visitor.Visit(this);
 	}
 };
+struct ConcreteElement3 : public Element	//add
+{
+	void Accept(Visitor& visitor) {
+		visitor.Visit(this);
+	}
+};
 
 void TestVisitor() {
 	ConcreteVisitor1 v1;
 	ConcreteVisitor2 v2;
 	std::unique_ptr<Element> emt1(new ConcreteElement1());
 	std::unique_ptr<Element> emt2(new ConcreteElement2());
+	std::unique_ptr<Element> emt3(new ConcreteElement3());	//add
 	emt1->Accept(v1);
 	emt2->Accept(v1);
+	emt3->Accept(v1);	//add
 	emt1->Accept(v2);
 	emt2->Accept(v2);
+	emt3->Accept(v2);	//add
 }
 ////////////////////////////////////
 template<typename... Types>
