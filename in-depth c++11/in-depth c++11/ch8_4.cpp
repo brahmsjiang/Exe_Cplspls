@@ -66,23 +66,38 @@ public:
 		return m_f();
 	}
 };
-/*
+
 struct stA {
 	int m_a;
 	int operator()(){return m_a;}
-	int operator(int n){return m_a + n;}
+	int operator()(int n){return m_a + n;}
 	int triple0(){return m_a * 3;}
 	int triple(int a){return m_a * 3 + a;}
 	int triple1() const {return m_a * 3;}
 	const int triple2(int a) const {return m_a * 3 + a;}
 	void triple3() {cout << "" << endl;}
 };
-*/
+
 int add_one(int n) {
 	return n + 1;
 }
 void TestWrap() {
 	CommCommand<int> cmd;
+	cmd.Wrap(add_one, 0);
+	cmd.Wrap([](int n) {return n + 1; }, 1);
+	stA bloop;
+	cmd.Wrap(bloop);
+	cmd.Wrap(bloop, 4);
+	stA t = { 10 };
+	int x = 3;
+	cmd.Wrap(&stA::triple0, &t);
+	cmd.Wrap(&stA::triple, &t, x);
+	cmd.Wrap(&stA::triple, &t, 3);
+	cmd.Wrap(&stA::triple2, &t, 3);
+	auto r = cmd.Execute();
+	CommCommand<> cmd1;
+	cmd1.Wrap(&stA::triple3, &t);
+	cmd1.Execute();
 }
 
 
@@ -90,6 +105,7 @@ int main(int argc, const char * argv[]) {
 
 	dummy();
 	cout << "/////////////////////" << endl;
+	TestWrap();
 
 	return 0;
 }
