@@ -64,7 +64,9 @@ public:
 	template<class R, class C, class... DArgs, class P, class... Args>
 	void Wrap(R(C::*f)(DArgs...), P&& p, Args&&... args) {
 		cout << "bind member func" << endl;
-		m_f = [&, f]{ return (*p.*f)(args...); };
+		m_f = [f, p, args...]{ return (*p.*f)(args...); };
+		m_f = [=]{ return (*p.*f)(args...); };
+		m_f = [&]{ return (*p.*f)(args...); };
 	}
 	Ro Execute() {
 		return m_f();
@@ -79,7 +81,7 @@ struct stA {
 	int triple(int a){return m_a * 3 + a;}
 	int triple1() const {return m_a * 3;}
 	const int triple2(int a) const {return m_a * 3 + a;}
-	void triple3() {cout << "" << endl;}
+	void triple3() {cout << "triple3" << endl;}
 };
 
 int add_one(int n) {
@@ -87,29 +89,31 @@ int add_one(int n) {
 }
 void TestWrap() {
 	CommCommand<int> cmd;
-	cmd.Wrap(add_one, 0);
-	cmd.Wrap([](int n) {return n + 1; }, 1);
+	cmd.Wrap(add_one, 0);//bind non member func
+	cmd.Wrap([](int n) {return n + 1; }, 1);//bind non member func
 	stA bloop;
-	cmd.Wrap(bloop);
-	cmd.Wrap(bloop, 4);
+	cmd.Wrap(bloop);//bind non member func
+	cmd.Wrap(bloop, 4);//bind non member func
 	stA t = { 10 };
 	int x = 3;
-	cmd.Wrap(&stA::triple0, &t);
-	cmd.Wrap(&stA::triple, &t, x);
-	cmd.Wrap(&stA::triple1, &t);
-	cmd.Wrap(&stA::triple2, &t, 3);
+	cmd.Wrap(&stA::triple0, &t);//bind member func
+	cmd.Wrap(&stA::triple, &t, x);//bind member func
+	cmd.Wrap(&stA::triple1, &t);//bind const member func
+	cmd.Wrap(&stA::triple2, &t, 3);//bind const member func
 	auto r = cmd.Execute();
 	CommCommand<> cmd1;
-	cmd1.Wrap(&stA::triple3, &t);
-	cmd1.Execute();
+	cmd1.Wrap(&stA::triple3, &t);//bind member func
+	//cmd1.Execute();//crash
 }
 
 int plusFunc(int a, int b, int c) {
 	return a + b + c;
 }
+
+
 using funcptr = int(*)(int, int, int);
 void testFunc(funcptr fptr, int* ptr, int val, int& ref) {
-	function<int()> lambda = [=]{ return (fptr)(*ptr, val, ref); };
+	function<int()> lambda = [&]{ return (fptr)(*ptr, val, ref); };
 	cout << lambda() << endl;
 }
 
