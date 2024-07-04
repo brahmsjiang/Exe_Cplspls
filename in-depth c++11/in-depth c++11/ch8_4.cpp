@@ -25,7 +25,8 @@ public:
 template<class Receiver>
 class SimpleCommand : public Command {
 public:
-	typedef void(Receiver::* Action)();
+	//typedef void(Receiver::* Action)();
+	using Action = void(Receiver::*)();
 	SimpleCommand(Receiver* r, Action a) : _receiver(r), _action(a) {}
 	virtual void Execute() {
 		(_receiver->*_action)();
@@ -44,25 +45,28 @@ void dummy() {
 	Command* aCommand = new SimpleCommand<MyClass>(receiver, &MyClass::Action);
 	aCommand->Execute();
 }
-/////////////////////
-template<typename R=void>
+//////////////////////////////////////////
+template<typename Ro=void>
 struct CommCommand {
 private:
-	std::function<R()> m_f;
+	function<Ro()> m_f;
 public:
 	template<class F, class... Args, class = typename enable_if<!is_member_function_pointer<F>::value>::type>
 	void Wrap(F&& f, Args&&... args) {
+		cout << "bind non member func" << endl;
 		m_f = [&]{ return f(args...); };
 	}
 	template<class R, class C, class... DArgs, class P, class... Args>
 	void Wrap(R(C::*f)(DArgs...) const, P&& p, Args&&... args) {
+		cout << "bind const member func" << endl;
 		m_f = [&, f]{ return (*p.*f)(args...); };
 	}
 	template<class R, class C, class... DArgs, class P, class... Args>
 	void Wrap(R(C::*f)(DArgs...), P&& p, Args&&... args) {
+		cout << "bind member func" << endl;
 		m_f = [&, f]{ return (*p.*f)(args...); };
 	}
-	R Execute() {
+	Ro Execute() {
 		return m_f();
 	}
 };
@@ -92,7 +96,7 @@ void TestWrap() {
 	int x = 3;
 	cmd.Wrap(&stA::triple0, &t);
 	cmd.Wrap(&stA::triple, &t, x);
-	cmd.Wrap(&stA::triple, &t, 3);
+	cmd.Wrap(&stA::triple1, &t);
 	cmd.Wrap(&stA::triple2, &t, 3);
 	auto r = cmd.Execute();
 	CommCommand<> cmd1;
@@ -100,12 +104,23 @@ void TestWrap() {
 	cmd1.Execute();
 }
 
+int plusFunc(int a, int b, int c) {
+	return a + b + c;
+}
+using funcptr = int(*)(int, int, int);
+void testFunc(funcptr fptr, int* ptr, int val, int& ref) {
+	function<int()> lambda = [=]{ return (fptr)(*ptr, val, ref); };
+	cout << lambda() << endl;
+}
 
 int main(int argc, const char * argv[]) {
 
 	dummy();
 	cout << "/////////////////////" << endl;
 	TestWrap();
+	cout << "/////////////////////" << endl;
+	int x = 3, y = 4;
+	testFunc(plusFunc, &x, 5, y);
 
 	return 0;
 }
