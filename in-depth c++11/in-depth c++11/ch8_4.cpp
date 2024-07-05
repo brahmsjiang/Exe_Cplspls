@@ -64,9 +64,14 @@ public:
 	template<class R, class C, class... DArgs, class P, class... Args>
 	void Wrap(R(C::*f)(DArgs...), P&& p, Args&&... args) {
 		cout << "bind member func" << endl;
-		m_f = [f, p, args...]{ return (*p.*f)(args...); };
-		m_f = [=]{ return (*p.*f)(args...); };
-		m_f = [&]{ return (*p.*f)(args...); };
+		//m_f = [f, p, args...]{ return (*p.*f)(args...); };	//ok
+		//m_f = [=]{ return (*p.*f)(args...); };	//ok
+		m_f = [&] {
+			cout << "p addr: " << p << endl;
+			cout << "f addr: " << f << endl;
+			return (*p.*f)(args...);
+		};
+		cout << "bind member func end" << endl;
 	}
 	Ro Execute() {
 		return m_f();
@@ -103,7 +108,8 @@ void TestWrap() {
 	auto r = cmd.Execute();
 	CommCommand<> cmd1;
 	cmd1.Wrap(&stA::triple3, &t);//bind member func
-	//cmd1.Execute();//crash
+	cout << "before cmd1.Execute()" << endl;
+	cmd1.Execute();	//crash, if no val capture with f
 }
 
 int plusFunc(int a, int b, int c) {
