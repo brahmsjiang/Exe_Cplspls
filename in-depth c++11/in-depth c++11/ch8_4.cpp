@@ -66,10 +66,10 @@ public:
 		cout << "bind member func" << endl;
 		//m_f = [f, p, args...]{ return (*p.*f)(args...); };	//ok
 		//m_f = [=]{ return (*p.*f)(args...); };	//ok
-		m_f = [&] {
-			cout << "p addr: " << p << endl;
+		m_f = [&, f] {
+			cout << "(*p).m_a: " << (*p).m_a << endl;// '.' is prior to '*'
 			cout << "f addr: " << f << endl;
-			return (*p.*f)(args...);
+			return ((*p).*f)(args...);
 		};
 		cout << "bind member func end" << endl;
 	}
