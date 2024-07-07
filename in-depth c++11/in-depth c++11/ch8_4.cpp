@@ -54,19 +54,28 @@ public:
 	template<class F, class... Args, class = typename enable_if<!is_member_function_pointer<F>::value>::type>
 	void Wrap(F&& f, Args&&... args) {
 		cout << "bind non member func" << endl;
-		m_f = [&]{ return f(args...); };
+		m_f = [&]{
+			cout << "f null" << endl;
+			return f(args...);
+		};
+		cout << "bind member func end" << endl;
 	}
 	template<class R, class C, class... DArgs, class P, class... Args>
 	void Wrap(R(C::*f)(DArgs...) const, P&& p, Args&&... args) {
 		cout << "bind const member func" << endl;
-		m_f = [&, f]{ return (*p.*f)(args...); };
+		m_f = [&, f]{
+			cout << "(*p).m_a: " << (*p).m_a << endl;// '.' is prior to '*'
+			cout << "f addr: " << f << endl;
+			return (*p.*f)(args...);
+		};
+		cout << "bind member func end" << endl;
 	}
 	template<class R, class C, class... DArgs, class P, class... Args>
 	void Wrap(R(C::*f)(DArgs...), P&& p, Args&&... args) {
 		cout << "bind member func" << endl;
 		//m_f = [f, p, args...]{ return (*p.*f)(args...); };	//ok
 		//m_f = [=]{ return (*p.*f)(args...); };	//ok
-		m_f = [&, f] {
+		m_f = [&] {
 			cout << "(*p).m_a: " << (*p).m_a << endl;// '.' is prior to '*'
 			cout << "f addr: " << f << endl;
 			return ((*p).*f)(args...);
@@ -95,21 +104,23 @@ int add_one(int n) {
 void TestWrap() {
 	CommCommand<int> cmd;
 	cmd.Wrap(add_one, 0);//bind non member func
-	cmd.Wrap([](int n) {return n + 1; }, 1);//bind non member func
-	stA bloop;
-	cmd.Wrap(bloop);//bind non member func
-	cmd.Wrap(bloop, 4);//bind non member func
+	//cmd.Wrap([](int n) {return n + 1; }, 1);//bind non member func
+	//stA bloop;
+	//cmd.Wrap(bloop);//bind non member func
+	//cmd.Wrap(bloop, 4);//bind non member func
+	cmd.Execute();
 	stA t = { 10 };
 	int x = 3;
-	cmd.Wrap(&stA::triple0, &t);//bind member func
-	cmd.Wrap(&stA::triple, &t, x);//bind member func
-	cmd.Wrap(&stA::triple1, &t);//bind const member func
+	//cmd.Wrap(&stA::triple0, &t);//bind member func
+	//cmd.Wrap(&stA::triple, &t, x);//bind member func
+	//cmd.Wrap(&stA::triple1, &t);//bind const member func
 	cmd.Wrap(&stA::triple2, &t, 3);//bind const member func
-	auto r = cmd.Execute();
+	cmd.Execute();
 	CommCommand<> cmd1;
 	cmd1.Wrap(&stA::triple3, &t);//bind member func
-	cout << "before cmd1.Execute()" << endl;
+	cout << "&stA::triple3: " << &stA::triple3 << endl;
 	cmd1.Execute();	//crash, if no val capture with f
+	cout << "&stA::triple3: " << &stA::triple3 << endl;
 }
 
 int plusFunc(int a, int b, int c) {
@@ -123,6 +134,24 @@ void testFunc(funcptr fptr, int* ptr, int val, int& ref) {
 	cout << lambda() << endl;
 }
 
+template<typename F>
+struct testPtr {
+	F ptr;
+	function<F()> m_f;
+	void storePtr(F p) {
+		m_f = [=] {
+			cout << p << endl;
+			cout << *p << endl;
+			return p;
+		};
+	}
+	void print() {
+		ptr = m_f();
+		cout << ptr << endl;
+		cout << *ptr << endl;
+	}
+};
+
 int main(int argc, const char * argv[]) {
 
 	dummy();
@@ -132,5 +161,15 @@ int main(int argc, const char * argv[]) {
 	int x = 3, y = 4;
 	testFunc(plusFunc, &x, 5, y);
 
+
+	testPtr<int*> testpp;
+	{	
+		int* xp = new int(8);
+		testpp.storePtr(xp);
+		delete xp;
+	}
+	testpp.print();
+
+	system("pause");
 	return 0;
 }
