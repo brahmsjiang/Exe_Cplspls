@@ -77,6 +77,9 @@ public:
 		//m_f = [=]{ return (*p.*f)(args...); };	//ok
 		m_f = [&] {
 			cout << "(*p).m_a: " << (*p).m_a << endl;// '.' is prior to '*'
+			int* tmmp = &((*p).m_a);
+			cout << "m_a addr: " << tmmp << endl;
+			cout << "m_a addr+1: " << tmmp+1 << endl;
 			cout << "f addr: " << f << endl;
 			return ((*p).*f)(args...);
 		};
