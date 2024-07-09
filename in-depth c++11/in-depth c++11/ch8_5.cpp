@@ -21,7 +21,7 @@ const int MaxObjectNum = 10;
 
 template<typename T>
 class ObjectPool {
-	template<typename.... Args>
+	template<typename... Args>
 	using Constructor = std::function<std::shared_ptr<T>(Args...)>;
 public:
 	ObjectPool() : needClear(false) {}
@@ -34,23 +34,23 @@ public:
 			throw std::logic_error("object num out of range.");
 		auto constructName = typeid(Constructor<Args...>).name(); //不区分引用
 		for (size_t i = 0; i < num; i++) {
-			m_object_map.emplace(constructName, shared_ptr<T>(new T(std::forward<Args>(args)...), [this, constructName](T* p)
+			m_object_map.emplace(constructName, shared_ptr<T>(new T(std::forward<Args>(args)...), [this, constructName, args...](T* p)
 			{
-				return createPtr<T>(string(constructName), args...);
+				createPtr(string(constructName), args...);
 			}
 			));
 		}
 	}
 
-	template<typename T, typename... Args>
-	std::shared_ptr<T> createPtr(string& constructName, Args... args)
+	template<typename... Args>
+	std::shared_ptr<T> createPtr(const string& constructName, Args... args)
 	{
-		return std::shared_ptr<T>(new T(args...), [constructName, this](T* t)
+		return std::shared_ptr<T>(new T(args...), [this, constructName](T* p)
 		{
 			if (needClear)
-				delete[] t;
+				delete[] p;
 			else
-				m_object_map.emplace(constructName, std::shared_ptr<T>(t));
+				m_object_map.emplace(constructName, std::shared_ptr<T>(p));
 		});
 	}
 
@@ -85,6 +85,16 @@ void Print(shared_ptr<BigObject> p, const string& str)
 {
 	if (p != nullptr)
 		p->Print(str);
+}
+
+void TestObjPool()
+{
+	ObjectPool<BigObject> pool;
+	pool.Init(2);
+	{
+		auto p = pool.Get();
+		Print(p, "p");
+	}
 }
 
 
