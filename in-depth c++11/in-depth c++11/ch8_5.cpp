@@ -19,6 +19,20 @@ using namespace std;
 
 const int MaxObjectNum = 10;
 
+
+template<typename T>
+void PrintArgs(T&& t) {
+	cout << t << ",";
+}
+
+template<typename T, typename... Args>
+void PrintArgs(T&& t, Args&&... args) {
+	PrintArgs(t);
+	cout << "sizeof...(Args): " << sizeof...(Args) << endl;
+	PrintArgs(args...);
+}
+
+
 template<typename T>
 class ObjectPool {
 	template<typename... Args>
@@ -36,7 +50,7 @@ public:
 		for (size_t i = 0; i < num; i++) {
 			m_object_map.emplace(constructName, shared_ptr<T>(new T(std::forward<Args>(args)...), [this, constructName, args...](T* p)
 			{
-				createPtr(string(constructName), args...);
+				return createPtr(string(constructName), args...);
 			}
 			));
 		}
@@ -94,12 +108,27 @@ void TestObjPool()
 	{
 		auto p = pool.Get();
 		Print(p, "p");
+		auto p2 = pool.Get();
+		Print(p2, "p2");
 	}
+	auto p = pool.Get();
+	auto p2 = pool.Get();
+	Print(p, "p");
+	Print(p2, "p2");
+
+	pool.Init(2, 1);
+	auto p4 = pool.Get<int>();
+	Print(p4, "p4");
+	pool.Init(2, 1, 2);
+	auto p5 = pool.Get<int, int>();
+	Print(p5, "p5");
 }
 
 
 int main(int argc, const char * argv[]) {
 
+	PrintArgs('a','b','c');
+	TestObjPool();
 	cout << "/////////////////////" << endl;
 
 	cout << "/////////////////////" << endl;
