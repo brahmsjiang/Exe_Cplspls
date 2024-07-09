@@ -124,13 +124,81 @@ void TestObjPool()
 	Print(p5, "p5");
 }
 
+class NonCopyable
+{
+protected:
+	NonCopyable() = default;
+	~NonCopyable() = default;
+	NonCopyable(const NonCopyable&) = delete;
+	NonCopyable& operator=(const NonCopyable&) = delete;
+};
+
+template<typename T>
+class ObjectPool1 : NonCopyable
+{
+	template<typename... Args>
+	using Constructor = std::function<std::shared_ptr<T>(Args...)>;
+public:
+	template<typename... Args>
+	void Init(size_t num, Args&&... args)
+	{
+		if (num <= 0 || num > MaxObjectNum)
+			throw std::logic_error("object num out of range.");
+		auto constructName = typeid(Constructor<Args...>).name(); //不区分引用
+		for (size_t i = 0; i < num; i++) {
+			m_object_map.emplace(constructName, shared_ptr<T>(new T(std::forward<Args>(args)...), [this, constructName, args...](T* p)
+			{
+				m_object_map.emplace(std::move(constructName), std::shared_ptr<T>(p));
+			}
+			));
+		}
+	}
+
+	template<typename... Args>
+	std::shared_ptr<T> Get()
+	{
+		string constructName = typeid(Constructor<Args...>).name();
+		auto range = m_object_map.equal_range(constructName);
+		for (auto it = range.first; it != range.second; ++it) {
+			auto ptr = it->second;
+			m_object_map.erase(it);
+			return ptr;
+		}
+		return nullptr;
+	}
+private:
+	std::multimap<std::string, std::shared_ptr<T>> m_object_map;
+};
+
+void TestObjPool1()
+{
+	ObjectPool1<BigObject> pool;
+	pool.Init(2);
+	{
+		auto p = pool.Get();
+		Print(p, "p");
+		auto p2 = pool.Get();
+		Print(p2, "p2");
+	}
+	auto p = pool.Get();
+	auto p2 = pool.Get();
+	Print(p, "p");
+	Print(p2, "p2");
+
+	pool.Init(2, 1);
+	auto p4 = pool.Get<int>();
+	Print(p4, "p4");
+	pool.Init(2, 1, 2);
+	auto p5 = pool.Get<int, int>();
+	Print(p5, "p5");
+}
 
 int main(int argc, const char * argv[]) {
 
 	PrintArgs('a','b','c');
 	TestObjPool();
 	cout << "/////////////////////" << endl;
-
+	TestObjPool1();
 	cout << "/////////////////////" << endl;
 
 	return 0;
