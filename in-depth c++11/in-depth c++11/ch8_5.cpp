@@ -19,16 +19,12 @@ using namespace std;
 
 const int MaxObjectNum = 10;
 
-
-template<typename T>
-void PrintArgs(T&& t) {
-	cout << t << ",";
+void PrintArgs() {
+	cout << endl;
 }
-
 template<typename T, typename... Args>
-void PrintArgs(T&& t, Args&&... args) {
-	PrintArgs(t);
-	cout << "sizeof...(Args): " << sizeof...(Args) << endl;
+void PrintArgs(T t, Args... args) {
+	cout << t << " ";
 	PrintArgs(args...);
 }
 
@@ -46,10 +42,13 @@ public:
 	{
 		if (num <= 0 || num > MaxObjectNum)
 			throw std::logic_error("object num out of range.");
+		PrintArgs("Init:", num, args...);
 		auto constructName = typeid(Constructor<Args...>).name(); //不区分引用
 		for (size_t i = 0; i < num; i++) {
 			m_object_map.emplace(constructName, shared_ptr<T>(new T(std::forward<Args>(args)...), [this, constructName, args...](T* p)
 			{
+				cout << "try deleting..." << constructName << endl;
+				 //删除器中不直接删除对象，而是回收到对象池中，以供下次使用
 				return createPtr(string(constructName), args...);
 			}
 			));
@@ -61,10 +60,12 @@ public:
 	{
 		return std::shared_ptr<T>(new T(args...), [this, constructName](T* p)
 		{
-			if (needClear)
+			if (needClear) {
 				delete[] p;
-			else
+			} else {
+				cout << "emplace again..." << constructName << endl;
 				m_object_map.emplace(constructName, std::shared_ptr<T>(p));
+			}
 		});
 	}
 
@@ -110,7 +111,9 @@ void TestObjPool()
 		Print(p, "p");
 		auto p2 = pool.Get();
 		Print(p2, "p2");
+		cout << "block ended." << endl;
 	}
+	/*
 	auto p = pool.Get();
 	auto p2 = pool.Get();
 	Print(p, "p");
@@ -122,6 +125,7 @@ void TestObjPool()
 	pool.Init(2, 1, 2);
 	auto p5 = pool.Get<int, int>();
 	Print(p5, "p5");
+	*/
 }
 
 class NonCopyable
@@ -195,7 +199,6 @@ void TestObjPool1()
 
 int main(int argc, const char * argv[]) {
 
-	PrintArgs('a','b','c');
 	TestObjPool();
 	cout << "/////////////////////" << endl;
 	TestObjPool1();
