@@ -61,6 +61,7 @@ public:
 		return std::shared_ptr<T>(new T(args...), [this, constructName](T* p)
 		{
 			if (needClear) {
+				cout << "delete p..." << constructName << endl;
 				delete[] p;
 			} else {
 				cout << "emplace again..." << constructName << endl;
@@ -76,6 +77,7 @@ public:
 		auto range = m_object_map.equal_range(constructName);
 		for (auto it = range.first; it != range.second; ++it) {
 			auto ptr = it->second;
+			cout << "Get, erase..." << constructName << endl;
 			m_object_map.erase(it);
 			return ptr;
 		}
@@ -100,34 +102,39 @@ void Print(shared_ptr<BigObject> p, const string& str)
 {
 	if (p != nullptr)
 		p->Print(str);
+	else
+		cout << "p == nullptr!" << endl;
 }
 
 void TestObjPool()
 {
 	ObjectPool<BigObject> pool;
-	pool.Init(2);
 	{
-		auto p = pool.Get();
-		Print(p, "p");
-		auto p2 = pool.Get();
-		Print(p2, "p2");
-		cout << "block ended." << endl;
+		pool.Init(2);
+		{
+			auto p = pool.Get();
+			Print(p, "p");
+			auto p2 = pool.Get();
+			Print(p2, "p2");
+			cout << "inner1 block ended<====" << endl;
+		}
+		auto p_ = pool.Get();
+		Print(p_, "p_");
+		auto p2_ = pool.Get();
+		Print(p2_, "p2_");
+		cout << "inner2 block endedd<====" << endl;
 	}
-	/*
-	auto p = pool.Get();
-	auto p2 = pool.Get();
-	Print(p, "p");
-	Print(p2, "p2");
-
 	pool.Init(2, 1);
 	auto p4 = pool.Get<int>();
 	Print(p4, "p4");
+
 	pool.Init(2, 1, 2);
 	auto p5 = pool.Get<int, int>();
 	Print(p5, "p5");
-	*/
-}
 
+	cout << "outer block endedd<====" << endl;
+}
+//////////////////////////////////////////////
 class NonCopyable
 {
 protected:
