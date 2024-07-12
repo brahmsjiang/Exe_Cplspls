@@ -144,7 +144,9 @@ const int MaxTaskCount = 100;
 class ThreadPool {
 public:
 	using Task = std::function<void()>;
-	ThreadPool(int numThreads = std::thread::hardware_concurrency()) : m_queue(MaxTaskCount) {
+	ThreadPool(int numThreads = std::thread::hardware_concurrency())
+		: m_queue(MaxTaskCount) {	// sync/block queue size
+		cout << "hardware_concurrency:" << numThreads << endl;
 		Start(numThreads);
 	}
 	~ThreadPool(void) {
@@ -170,7 +172,7 @@ private:
 	void RunInThread() {
 		while (m_running) {
 			std::list<Task> list;
-			m_queue.Take(list);
+			m_queue.Take(list);	// take all
 			for (auto& task : list) {
 				if (!m_running)
 					return;
@@ -194,10 +196,35 @@ private:
 	std::once_flag m_flag;
 };
 
+void TestThdPool() {
+	ThreadPool pool(2);
+	std::thread thd1([&pool] {
+		for (int i = 0; i < 10; ++i) {
+			auto thdId = this_thread::get_id();
+			pool.AddTask([thdId] {
+				cout << "syncLayer thd1 ID:" << thdId << endl;
+			});
+		}
+	});
+	std::thread thd2([&pool] {
+		for (int i = 0; i < 10; ++i) {
+			auto thdId = this_thread::get_id();
+			pool.AddTask([thdId] {
+				cout << "syncLayer thd2 ID:" << thdId << endl;
+			});
+		}
+	});
+	this_thread::sleep_for(std::chrono::seconds(2));
+	getchar();
+	pool.Stop();
+	thd1.join();
+	thd2.join();
+}
 
 int main(int argc, const char * argv[]) {
 	TestClassFunc();
 	cout << "/////////////////////" << endl;
+	TestThdPool();
 
 	return 0;
 }
