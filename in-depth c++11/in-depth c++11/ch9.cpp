@@ -176,6 +176,7 @@ private:
 			for (auto& task : list) {
 				if (!m_running)
 					return;
+				cout << "do task, by Async thd ID:" << this_thread::get_id() << endl;
 				task();
 			}
 		}
@@ -199,18 +200,18 @@ private:
 void TestThdPool() {
 	ThreadPool pool(2);
 	std::thread thd1([&pool] {
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 5; ++i) {
 			auto thdId = this_thread::get_id();
 			pool.AddTask([thdId] {
-				cout << "syncLayer thd1 ID:" << thdId << endl;
+				cout << "SyncLayer Thd1 ID:" << thdId << endl;
 			});
 		}
 	});
 	std::thread thd2([&pool] {
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 5; ++i) {
 			auto thdId = this_thread::get_id();
 			pool.AddTask([thdId] {
-				cout << "syncLayer thd2 ID:" << thdId << endl;
+				cout << "SyncLayer Thd2 ID:" << thdId << endl;
 			});
 		}
 	});
