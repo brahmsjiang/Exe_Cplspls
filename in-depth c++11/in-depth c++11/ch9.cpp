@@ -17,6 +17,51 @@
 
 using namespace std;
 
+
+template<typename T>
+class TestClass
+{
+public:
+	TestClass() {}
+
+	template<typename... Args>
+	TestClass(Args&&... args) {
+		intV = {args...};
+	}
+/*
+	void Func(const T& x) {	//const T& universal reference, accept lvaue & rvalue
+		cout << "Func(const T& x)" << endl;
+	}
+*/
+
+	void Func(T&& x) {	//T&& not universal reference, only accept rvalue
+		cout << "Func(T&& x)" << endl;
+	}
+	template<typename F>
+	void Func(F&& x) {	//F&& universal reference, accept lvaue & rvalue
+		cout << "template<tyepname F>, Func(F&& x)" << endl;
+	}
+	void Take(std::vector<T>& vec) {
+		vec = std::move(intV);
+	}
+	size_t vSize() { return intV.size(); }
+private:
+	std::vector<T> intV;
+};
+
+void TestClassFunc() {
+	TestClass<int> obj;
+	obj.Func(1);
+	int x = 1;
+	obj.Func(x);
+	TestClass<int> obj1(1,2,3);
+	cout << "obj1 intV size:" << obj1.vSize() << endl;
+	std::vector<int> res;
+	obj1.Take(res);
+	cout << "obj1 intV size:" << obj1.vSize() << endl;
+	cout << "res size:" << res.size() << endl;
+}
+
 template<typename T>
 class SyncQueue
 {
@@ -38,21 +83,21 @@ public:
 	}
 	void Take(T& t) {
 		std::unique_lock<std::mutex> locker(m_mutex);
-		m_notEmpty.wait(locker, [this]{ return m_needStop || NotEmpty(); });
+		m_notEmpty.wait(locker, [this]{ return m_needStop || NotEmpty(); });	//when take ele, watch notEmpty
 		if (m_needStop)
 			return;
 		t = m_queue.front();
 		m_queue.pop_front();
-		m_notFull.notify_one();
+		m_notFull.notify_one();	//after take ele, notify notFull
 	}
 	template<typename F>
 	void Add(F&& x) {
 		std::unique_lock<std::mutex> locker(m_mutex);
-		m_notFull.wait(locker, [this]{ return m_needStop || NotFull(); });
+		m_notFull.wait(locker, [this]{ return m_needStop || NotFull(); });	//when add ele, watch notFull
 		if (m_needStop)
 			return;
 		m_queue.push_back(std::forward<F>(x));
-		m_notEmpty.notify_one();
+		m_notEmpty.notify_one();	//after add ele, notify notEmpty
 	}
 	void Stop() {
 		{
@@ -94,7 +139,8 @@ private:
 
 
 int main(int argc, const char * argv[]) {
-
+	TestClassFunc();
+	cout << "/////////////////////" << endl;
 
 	return 0;
 }
