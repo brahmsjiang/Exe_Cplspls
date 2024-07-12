@@ -215,7 +215,7 @@ void TestThdPool() {
 			});
 		}
 	});
-	this_thread::sleep_for(std::chrono::seconds(2));
+	this_thread::sleep_for(std::chrono::seconds(5));
 	getchar();
 	pool.Stop();
 	thd1.join();
