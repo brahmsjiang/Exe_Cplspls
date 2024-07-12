@@ -14,9 +14,9 @@
 #include <algorithm>
 #include <numeric>
 #include <map>
+#include <thread>
 
 using namespace std;
-
 
 template<typename T>
 class TestClass
@@ -62,6 +62,8 @@ void TestClassFunc() {
 	cout << "res size:" << res.size() << endl;
 }
 
+////////////////////////////////////////
+////////////////////////////////////////
 template<typename T>
 class SyncQueue
 {
@@ -75,6 +77,7 @@ public:
 	}
 	void Take(std::list<T>& list) {
 		std::unique_lock<std::mutex> locker(m_mutex);
+		//conditionvar, unlock & wait if condition not satisfy; lock & go through if be notified and condition satisfy
 		m_notEmpty.wait(locker, [this]{ return m_needStop || NotEmpty(); });
 		if (m_needStop)
 			return;
@@ -135,6 +138,60 @@ private:
 	std::condition_variable m_notFull;
 	int m_maxSize;
 	bool m_needStop;
+};
+
+const int MaxTaskCount = 100;
+class ThreadPool {
+public:
+	using Task = std::function<void()>;
+	ThreadPool(int numThreads = std::thread::hardware_concurrency()) : m_queue(MaxTaskCount) {
+		Start(numThreads);
+	}
+	~ThreadPool(void) {
+		Stop();
+	}
+	void Stop() {
+		// make sure only once call StopThreadGroup
+		std::call_once(m_flag, [this]{ StopThreadGroup(); });
+	}
+	void AddTask(Task&& task) {
+		m_queue.Put(std::forward<Task>(task));
+	}
+	void AddTask(const Task& task) {
+		m_queue.Put(task);
+	}
+private:
+	void Start(int numThreads) {
+		m_running = true;
+		for (int i = 0; i < numThreads; ++i) {
+			m_threadgroup.push_back(std::make_shared<std::thread>(&ThreadPool::RunInThread, this));
+		}
+	}
+	void RunInThread() {
+		while (m_running) {
+			std::list<Task> list;
+			m_queue.Take(list);
+			for (auto& task : list) {
+				if (!m_running)
+					return;
+				task();
+			}
+		}
+	}
+	void StopThreadGroup() {
+		m_queue.Stop();
+		m_running = false;
+		for (auto thread : m_threadgroup) {
+			if (thread)
+				thread->join();
+		}
+		m_threadgroup.clear();
+	}
+private:
+	std::list<std::shared_ptr<std::thread>> m_threadgroup;
+	SyncQueue<Task> m_queue;
+	atomic_bool m_running;
+	std::once_flag m_flag;
 };
 
 
