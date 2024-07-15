@@ -58,23 +58,19 @@ void TestProxy() {
 ///////////////////////////////////////
 ///////////////////////////////////////
 #define HAS_MEMBER(member)\
-typename<typename T, typename... Args>\
+template<typename T, typename... Args>\
 struct has_member_##member\
 {\
 private:\
-	template<typename U>\
-	static auto Check(int) -> decltype(std::declval<U>().member(std::declval<Args>()...), std::true_type());\
-	template<typename U>\
-	static std::false_type Check(int);\
+	template<typename U> static auto Check(int) -> decltype(std::declval<U>().member(std::declval<Args>()...), std::true_type());\
+	template<typename U> static std::false_type Check(...);\
 public:\
-	enum { value = std::is_same<decltype(Check<T>(0)), std::true_type>::value;\
+	enum { value = std::is_same<decltype(Check<T>(0)), std::true_type>::value };\
 };
+
 HAS_MEMBER(Foo)
-HAS_MEMBER(Before)
 HAS_MEMBER(After)
-
-
-
+HAS_MEMBER(Before)
 
 struct AA {
 	void Before(int i) {
@@ -116,8 +112,7 @@ void HT(int a) {
 }
 void TestAop()
 {
-	std::function<void(int)> f = std::bind(&HT, std::placeholders::_1);
-
+	auto f = std::bind(HT, std::placeholders::_1);
 }
 
 
