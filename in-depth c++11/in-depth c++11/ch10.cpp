@@ -76,7 +76,6 @@ public:\
 	enum { value = std::is_same<decltype(Check<T>(0)), std::true_type>::value };\
 };
 
-HAS_MEMBER(Foo)
 HAS_MEMBER(After)
 HAS_MEMBER(Before)
 
@@ -186,10 +185,24 @@ private:
 }
 */
 
-std::true_type tstCompileRetFunc();
+template<typename T>
+struct tstCompil
+{
+	static std::true_type tstCompileRetFunc();
+};
+
+template<typename T, typename... Args>
+struct has_member_Foo
+{
+public:
+	static std::false_type Check(int);
+public:
+	enum { value = std::is_same<decltype(Check(0)), std::true_type>::value };
+};
 
 int main(int argc, const char * argv[]) {
-	//cout << "tstCompileRetFunc:" << tstCompileRetFunc() << endl;
+	cout << decltype(has_member_Foo<int>::Check(0))::value << endl;
+	//cout << "tstCompileRetFunc:" << tstCompil<int>::tstCompileRetFunc() << endl;
 	cout << "/////////////////////" << endl;
 	TestProxy();
 	cout << "/////////////////////" << endl;
