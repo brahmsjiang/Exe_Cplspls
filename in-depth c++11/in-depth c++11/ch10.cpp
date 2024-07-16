@@ -186,7 +186,11 @@ private:
 }
 */
 
+std::true_type tstCompileRetFunc();
+
 int main(int argc, const char * argv[]) {
+	//cout << "tstCompileRetFunc:" << tstCompileRetFunc() << endl;
+	cout << "/////////////////////" << endl;
 	TestProxy();
 	cout << "/////////////////////" << endl;
 	TestAop();
