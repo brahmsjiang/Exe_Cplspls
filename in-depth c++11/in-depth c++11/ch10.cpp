@@ -220,10 +220,17 @@ template<typename T>
 struct tstCompil
 {
 	static std::true_type tstCompileRetFunc();
+	static void Before() {
+		cout << "Before tstCompil..." << std::endl;
+	}
 };
+void TestBase() {
+	cout << decltype(tstCompil<int>::tstCompileRetFunc())::value << endl;
+	cout << has_member_After<tstCompil<int>>::value << endl;
+}
 
 int main(int argc, const char * argv[]) {
-	cout << decltype(tstCompil<int>::tstCompileRetFunc())::value << endl;
+	TestBase();
 	cout << "/////////////////////" << endl;
 	TestProxy();
 	cout << "/////////////////////" << endl;
