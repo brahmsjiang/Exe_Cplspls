@@ -86,6 +86,48 @@ void TestOld2() {
 	delete a;
 }
 
+///////////////////////////////
+template<class T>
+class IocContainer
+{
+public:
+	IocContainer() {};
+	~IocContainer() {};
+	template <class Drived>
+	void RegisterType(string strKey) {
+		std::function<T*()> function = []{ return new Drived(); };
+		RegisterType(strKey, function);
+	}
+	T* Resolve(string strKey) {
+		if (m_creatorMap.find(strKey) == m_creatorMap.end())
+			return nullptr;
+		std::function<T*()> function = m_creatorMap[strKey];
+		return function();
+	}
+	std::shared_ptr<T> ResolveShared(string strKey) {
+		T* ptr = Resolve(strKey);
+		return std::shared_ptr<T>(ptr);
+	}
+private:
+	std::map<string, std::function<T*()>> m_creatorMap;
+private:
+	void RegisterType(string strKey, std::function<T*()> creator) {
+		if (m_creatorMap.find(strKey) != m_creatorMap.end())
+			throw std::invalid_argument("this key has already exist!");
+		m_creatorMap.emplace(strKey, creator);
+	}
+};
+
+void TestNew() {
+	IocContainer<Base> baseIoc;
+	baseIoc.RegisterType<DerivedB>("DerivedB");
+	baseIoc.RegisterType<DerivedC>("DerivedC");
+	std::shared_ptr<Base> b = baseIoc.ResolveShared("DerivedB");
+	b->Func();
+	std::shared_ptr<Base> c = baseIoc.ResolveShared("DerivedC");
+	c->Func();
+}
+
 int main(int argc, const char * argv[]) {
 	TestOld0();
 	cout << "/////////////////////" << endl;
@@ -93,6 +135,7 @@ int main(int argc, const char * argv[]) {
 	cout << "/////////////////////" << endl;
 	TestOld2();
 	cout << "/////////////////////" << endl;
+	TestNew();
 
 	return 0;
 }
