@@ -91,8 +91,8 @@ template<class T>
 class IocContainer
 {
 public:
-	IocContainer() {};
-	~IocContainer() {};
+	IocContainer() = default;
+	~IocContainer() = default;
 	template <class Drived>
 	void RegisterType(string strKey) {
 		std::function<T*()> function = []{ return new Drived(); };
