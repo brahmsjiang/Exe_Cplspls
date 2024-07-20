@@ -14,9 +14,21 @@
 #include <algorithm>
 #include <numeric>
 #include <map>
+#include <unordered_map>
 #include <thread>
+#include "../../Utilties/any.hpp"
 
 using namespace std;
+
+void TestAny() {
+	Any n;
+	auto r = n.IsNull();
+	string s1 = "hello";
+	n = s1;
+	n.AnyCast<string>();
+	Any n1 = 1;
+	n1.Is<int>();
+}
 
 struct Base
 {
@@ -35,7 +47,15 @@ struct DerivedD : Base
 {
 	void Func() override { cout << "call func in DerivedD" << endl; }
 };
-class A
+struct Bus
+{
+	void Test() { cout << "Bus::test()" << endl; }
+};
+struct Car
+{
+	void Test() { cout << "Car::test()" << endl; }
+};
+class A //A-->Base
 {
 public:
 	A(Base* interface) : m_interface(interface) {}
@@ -127,6 +147,60 @@ void TestNew() {
 	std::shared_ptr<Base> c = baseIoc.ResolveShared("DerivedC");
 	c->Func();
 }
+/////////////////////////////////
+class IocContainer1
+{
+public:
+	IocContainer1() = default;
+	~IocContainer1() = default;
+	template <class T>
+	void RegisterType(string strKey) {
+		std::function<T*()> function = [] { return new T(); };
+		RegisterType(strKey, function);
+	}
+	template <class T, typename Depend>
+	void RegisterType(string strKey) {
+		std::function<T*()> function = [] { return new T(new Depend()); };
+		RegisterType(strKey, function);
+	}
+	template <class T>
+	T* Resolve(string strKey) {
+		if (m_creatorMap.find(strKey) == m_creatorMap.end())
+			return nullptr;
+		Any resolver = m_creatorMap[strKey];
+		std::function<T*()> function = resolver.AnyCast<std::function<T*()>>();
+		return function();
+	}
+	template <class T>
+	std::shared_ptr<T> ResolveShared(const string& strKey) {
+		T* t = Resolve<T>(strKey);
+		return std::shared_ptr<T>(t);
+	}
+private:
+	std::unordered_map<string, Any> m_creatorMap;
+private:
+	void RegisterType(string strKey, Any creator) {
+		if (m_creatorMap.find(strKey) != m_creatorMap.end())
+			throw std::invalid_argument("this key has already exist!");
+		m_creatorMap.emplace(strKey, creator);
+	}
+};
+
+void TestNew1() {
+	IocContainer1 ioc;
+	ioc.RegisterType<A, DerivedB>("DerivedB");
+	ioc.RegisterType<A, DerivedC>("DerivedC");
+	auto b = ioc.ResolveShared<A>("DerivedB");
+	b->Func();
+	auto c = ioc.ResolveShared<A>("DerivedC");
+	c->Func();
+	ioc.RegisterType<Bus>("bus");
+	ioc.RegisterType<Car>("car");
+	auto bus = ioc.ResolveShared<Bus>("bus");
+	bus->Test();
+	auto car = ioc.ResolveShared<Car>("car");
+	car->Test();
+}
 
 int main(int argc, const char * argv[]) {
 	TestOld0();
@@ -136,6 +210,10 @@ int main(int argc, const char * argv[]) {
 	TestOld2();
 	cout << "/////////////////////" << endl;
 	TestNew();
+	cout << "/////////////////////" << endl;
+	TestNew1();
+	cout << "/////////////////////" << endl;
+
 
 	return 0;
 }
