@@ -153,22 +153,24 @@ class IocContainer1
 public:
 	IocContainer1() = default;
 	~IocContainer1() = default;
+	/*
 	template <class T>
 	void RegisterType(string strKey) {
 		std::function<T*()> function = [] { return new T(); };
 		RegisterType(strKey, function);
 	}
-	template <class T, typename Depend>
+	*/
+	template <class T, typename... Depend>
 	void RegisterType(string strKey) {
-		std::function<T*()> function = [] { return new T(new Depend()); };
-		RegisterType(strKey, function);
+		std::function<T*()> function = [] { return new T(new Depend()...); };//erase type T by lambda
+		RegisterType(strKey, function);	//store function<T*()> in Any
 	}
 	template <class T>
 	T* Resolve(string strKey) {
 		if (m_creatorMap.find(strKey) == m_creatorMap.end())
 			return nullptr;
 		Any resolver = m_creatorMap[strKey];
-		std::function<T*()> function = resolver.AnyCast<std::function<T*()>>();
+		std::function<T*()> function = resolver.AnyCast<std::function<T*()>>();//just convert Any to template-func's para <T>
 		return function();
 	}
 	template <class T>
@@ -187,13 +189,14 @@ private:
 };
 
 void TestNew1() {
-	IocContainer1 ioc;
+	IocContainer1 ioc;	//no need specify template para as <base>
 	ioc.RegisterType<A, DerivedB>("DerivedB");
 	ioc.RegisterType<A, DerivedC>("DerivedC");
 	auto b = ioc.ResolveShared<A>("DerivedB");
 	b->Func();
 	auto c = ioc.ResolveShared<A>("DerivedC");
 	c->Func();
+	////////////
 	ioc.RegisterType<Bus>("bus");
 	ioc.RegisterType<Car>("car");
 	auto bus = ioc.ResolveShared<Bus>("bus");
