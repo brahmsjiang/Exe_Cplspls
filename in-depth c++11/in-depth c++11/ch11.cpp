@@ -16,7 +16,10 @@
 #include <map>
 #include <unordered_map>
 #include <thread>
-#include "../../Utilties/any.hpp"
+#include <typeinfo>
+#include <typeindex>
+#include "../../Utilties/Any.hpp"
+#include "../../Utilties/NonCopyable.hpp"
 
 using namespace std;
 
@@ -153,20 +156,17 @@ class IocContainer1
 public:
 	IocContainer1() = default;
 	~IocContainer1() = default;
-	/*
-	template <class T>
-	void RegisterType(string strKey) {
-		std::function<T*()> function = [] { return new T(); };
-		RegisterType(strKey, function);
-	}
-	*/
+	IocContainer1(const IocContainer1&) = delete;
+	IocContainer1(IocContainer1&&) = default;
+	IocContainer1& operator=(const IocContainer1&) = default;
+
 	template <class T, typename... Depend>
-	void RegisterType(string strKey) {
+	void RegisterType(const string& strKey) {
 		std::function<T*()> function = [] { return new T(new Depend()...); };//erase type T by lambda
 		RegisterType(strKey, function);	//store function<T*()> in Any
 	}
 	template <class T>
-	T* Resolve(string strKey) {
+	T* Resolve(const string& strKey) {
 		if (m_creatorMap.find(strKey) == m_creatorMap.end())
 			return nullptr;
 		Any resolver = m_creatorMap[strKey];
@@ -181,7 +181,7 @@ public:
 private:
 	std::unordered_map<string, Any> m_creatorMap;
 private:
-	void RegisterType(string strKey, Any creator) {
+	void RegisterType(const string& strKey, Any creator) {
 		if (m_creatorMap.find(strKey) != m_creatorMap.end())
 			throw std::invalid_argument("this key has already exist!");
 		m_creatorMap.emplace(strKey, creator);
@@ -205,6 +205,14 @@ void TestNew1() {
 	car->Test();
 }
 
+struct AAA {
+	AAA(const AAA&) = default;
+};
+bool testAAA() {
+	std::map<int, AAA> m;
+    return m.begin() == m.end(); // line 9
+}
+
 int main(int argc, const char * argv[]) {
 	TestOld0();
 	cout << "/////////////////////" << endl;
@@ -216,6 +224,7 @@ int main(int argc, const char * argv[]) {
 	cout << "/////////////////////" << endl;
 	TestNew1();
 	cout << "/////////////////////" << endl;
+	//auto res = testAAA();
 
 
 	return 0;
