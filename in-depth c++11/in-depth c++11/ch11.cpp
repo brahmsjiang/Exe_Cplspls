@@ -40,7 +40,12 @@ struct Base
 };
 struct DerivedB : Base
 {
-	void Func() override { cout << "call func in DerivedB" << endl; }
+	DerivedB() = default;
+	DerivedB(int a, double b) : m_a(a), m_b(b) {}
+	void Func() override { cout << "call func in DerivedB: " << m_a + m_b << endl; }
+private:
+	int m_a;
+	double m_b;
 };
 struct DerivedC : Base
 {
@@ -53,6 +58,7 @@ struct DerivedD : Base
 struct Bus
 {
 	void Test() { cout << "Bus::test()" << endl; }
+	void Test(int a, int b) { cout << "Bus::test(): " << a+b << endl; }
 };
 struct Car
 {
@@ -212,6 +218,72 @@ bool testAAA() {
 	std::map<int, AAA> m;
     return m.begin() == m.end(); // line 9
 }
+/////////////////////////////////
+class IocContainer2 : NonCopyable
+{
+public:
+	IocContainer2(void) = default;
+	~IocContainer2(void) = default;
+	template<class T, typename... Args>
+	void RegisterSimpleType(const string& strKey) {
+		std::function<T*()> function = [](Args... args){ return new T(args...); };
+		RegisterType(strKey, function);
+	}
+	template<class T, typename Depend, typename... Args>
+	typename std::enable_if<!std::is_base_of<T, Depend>::value>::type RegisterType(const string& strKey) {
+		std::function<T*(Args...)> function = [](Args... args) { return new T(new Depend(args...)); };
+		RegisterType(strKey, function);
+	}
+	template<class T, typename Depend, typename... Args>
+	typename std::enable_if<std::is_base_of<T, Depend>::value, void>::type RegisterType(const string& strKey) {
+		std::function<T*(Args...)> function = [](Args... args) { return new Depend(args...); };
+		RegisterType(strKey, function);
+	}
+	////////
+	template<class T, typename... Args>
+	T* Resolve(const string& strKey, Args... args) {
+		if (m_creatorMap.find(strKey) == m_creatorMap.end())
+			return nullptr;
+		Any resolver = m_creatorMap[strKey];
+		std::function<T*(Args...)> function = resolver.AnyCast<std::function<T*(Args...)>>();
+		return function(args...);
+	}
+	template<class T, typename... Args>
+	std::shared_ptr<T> ResolveShared(const string& strKey, Args... args) {
+		T* t = Resolve<T>(strKey, args...);
+		return std::shared_ptr<T>(t);
+	}
+private:
+	void RegisterType(const string& strKey, Any constructor) {
+		if (m_creatorMap.find(strKey) != m_creatorMap.end())
+			throw std::invalid_argument("this key has already exist!");
+		m_creatorMap.emplace(strKey, constructor);
+	}
+private:
+	unordered_map<string, Any> m_creatorMap;
+};
+void TestNew2() {
+	IocContainer2 ioc;
+	ioc.RegisterType<A, DerivedC>("DerivedC");
+	auto c = ioc.ResolveShared<A>("DerivedC");
+	c->Func();
+	////////////
+	ioc.RegisterType<A, DerivedB>("DerivedB1");
+	ioc.RegisterType<A, DerivedB, int, double>("DerivedB2");
+	auto b1 = ioc.ResolveShared<A>("DerivedB1");
+	b1->Func();
+	auto b2 = ioc.ResolveShared<A>("DerivedB2", 1, 2.0);
+	b2->Func();
+	///////////
+	ioc.RegisterSimpleType<Bus>("bus");
+	auto bus = ioc.ResolveShared<Bus>("bus");
+	bus->Test(1, 2);
+	///////////
+	ioc.RegisterType<Base, DerivedB>("DerivedB");
+	auto b = ioc.ResolveShared<Base>("DerivedB");
+	b->Func();
+}
+
 
 int main(int argc, const char * argv[]) {
 	TestOld0();
@@ -225,7 +297,7 @@ int main(int argc, const char * argv[]) {
 	TestNew1();
 	cout << "/////////////////////" << endl;
 	//auto res = testAAA();
-
+	TestNew2();
 
 	return 0;
 }
