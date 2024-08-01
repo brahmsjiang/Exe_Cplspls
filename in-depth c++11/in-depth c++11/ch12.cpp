@@ -68,7 +68,7 @@ FUNCTION_TRAITS(const volatile)
 
 ////func obj
 template<typename Callable>
-struct function_traits : function_traits<decltype(&Callable::operator())> {};//why ?
+struct function_traits : function_traits<decltype(&Callable::operator())> {};//why use & ?
 
 template<typename Function>
 typename function_traits<Function>::stl_function_type to_funcion(const Function& lambda) {
