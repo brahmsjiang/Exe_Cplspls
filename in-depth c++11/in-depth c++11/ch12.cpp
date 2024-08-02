@@ -68,7 +68,7 @@ FUNCTION_TRAITS(const volatile)
 
 ////func obj
 template<typename Callable>
-struct function_traits : function_traits<decltype(&Callable::operator())> {};//why use & ?
+struct function_traits : function_traits<decltype(&Callable::operator())> {};
 
 template<typename Function>
 typename function_traits<Function>::stl_function_type to_funcion(const Function& lambda) {
@@ -90,18 +90,29 @@ template <typename Ret, typename... Args>
 struct templete_using
 {
 	using signature = Ret(Args...);
+	static int staticFunc() { return 1; }
+	int operator()() { return 1; }
+	int normFunc() { return 1; }
+	int value = 3;
 };
 
-
 void testUsing() {
-	using funcWithSig = std::function<templete_using<void, int, std::string>::signature>;
-	funcWithSig obj = [](int num, std::string str){ cout << str << std::to_string(num) << endl; };
+	using namespace std;
+	using specificTemplete = templete_using<void, int, string>;
+	using funcWithSig = function<specificTemplete::signature>;
+	funcWithSig obj = [](int num, string str){ cout << str << to_string(num) << endl; };
 	obj(1, "shit");
-	using anotherSig = void(int, std::string);
-	std::function<anotherSig> obj2 = [](int num, std::string str){ cout << str << std::to_string(num) << endl; };
+	using anotherSig = void(int, string);
+	function<anotherSig> obj2 = [](int num, string str){ cout << str << to_string(num) << endl; };
 	obj(2, "fuck");
+	decltype(specificTemplete::staticFunc()) whoami0;
+	decltype(declval<specificTemplete>().normFunc()) whoami1;
+	decltype(&specificTemplete::normFunc) whoami2; cout << typeid(whoami2).name() << endl;
+	decltype(declval<specificTemplete>().operator()()) whoami4; cout << typeid(whoami4).name() << endl;
+	decltype(&specificTemplete::operator()) whoami3; cout << typeid(whoami3).name() << endl;
+	cout << &specificTemplete::value << endl;
+	cout << specificTemplete::staticFunc << endl;
 }
-
 
 void test0() {
 	auto f = to_funcion([](int i){return i;});
