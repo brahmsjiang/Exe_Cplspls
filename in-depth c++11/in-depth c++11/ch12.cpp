@@ -35,6 +35,8 @@ public:
 	using function_type = Ret(Args...);
 	using return_type = Ret;
 	using stl_function_type = std::function<function_type>;
+	using pointer = Ret(*)(Args...);
+
 	template<size_t I>
 	struct args {	//to access the type of the Ith element in a tuple.
 		static_assert(I < arity, "index is out of range, index must less than sizeof Args");
@@ -69,7 +71,7 @@ FUNCTION_TRAITS(const volatile)
 ////func obj
 template<typename Callable>
 struct function_traits : function_traits<decltype(&Callable::operator())> {};
-
+//////////////
 template<typename Function>
 typename function_traits<Function>::stl_function_type to_funcion(const Function& lambda) {
 	return static_cast<function_traits<Function>::stl_function_type>(lambda);
@@ -96,6 +98,30 @@ struct templete_using
 	int value = 3;
 };
 
+/////////
+struct lambdaSaver
+{
+	std::function<void()> mf;
+	void wrap(void(*f)()) {
+		mf = [f]{return (*f)();};
+	}
+	void wrap1(void(*f)()) {
+		mf = [&]{return (*f)();};
+	}
+	void execute() {
+		return mf();
+	}
+};
+void voidFunc() {cout << "voidFunc" << endl;}
+void testLambdaByRef() {
+	lambdaSaver obj1;
+	obj1.wrap(voidFunc);
+	obj1.execute();
+	obj1.wrap1(&voidFunc);
+	obj1.execute();
+}
+/////////
+
 void testUsing() {
 	using namespace std;
 	using specificTemplete = templete_using<void, int, string>;
@@ -119,13 +145,16 @@ void test0() {
 	std::function<int(int)> f1 = [](int i){return i;};
 	if (std::is_same<decltype(f), decltype(f1)>::value)
 		cout << "same" << endl;
+	auto pp = to_function_pointer([](int i){return i;});
+	cout << pp(12) << endl; // (*pp)(12) is the same
 }
 
 int main(int argc, const char * argv[]) {
+	testLambdaByRef();
+	cout << "/////////////////////" << endl;
 	testUsing();
 	cout << "/////////////////////" << endl;
 	test0();
-	cout << "/////////////////////" << endl;
 	cout << "/////////////////////" << endl;
 
 	cout << "/////////////////////" << endl;
