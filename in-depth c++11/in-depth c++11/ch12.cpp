@@ -99,14 +99,18 @@ struct templete_using
 };
 
 /////////
+struct clsWithFunc
+{
+	void func() {cout << "clsWithFunc::func" << endl;}
+};
 struct lambdaSaver
 {
 	std::function<void()> mf;
-	void wrap(void(*f)()) {
-		mf = [f]{return (*f)();};
+	void wrap(void(clsWithFunc::*f)(), clsWithFunc& obj) {
+		mf = [&, f]{return (obj.*f)();};
 	}
-	void wrap1(void(*f)()) {
-		mf = [&]{return (*f)();};
+	void wrap1(void(clsWithFunc::*f)(), clsWithFunc& obj) {
+		mf = [f, obj]{return (obj.*f)();};
 	}
 	void execute() {
 		return mf();
@@ -115,9 +119,10 @@ struct lambdaSaver
 void voidFunc() {cout << "voidFunc" << endl;}
 void testLambdaByRef() {
 	lambdaSaver obj1;
-	obj1.wrap(voidFunc);
+	clsWithFunc funcObj;
+	obj1.wrap(&clsWithFunc::func, funcObj);
 	obj1.execute();
-	obj1.wrap1(&voidFunc);
+	obj1.wrap1(&clsWithFunc::func, funcObj);
 	obj1.execute();
 }
 /////////
