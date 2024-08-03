@@ -106,11 +106,11 @@ struct clsWithFunc
 struct lambdaSaver
 {
 	std::function<void()> mf;
-	void wrap(void(clsWithFunc::*f)(), clsWithFunc& obj) {
-		mf = [&, f]{return (obj.*f)();};
+	void wrap(void(clsWithFunc::*f)(), clsWithFunc* obj) {
+		mf = [obj1=obj, f1=f]{return (*obj1.*f1)();};
 	}
-	void wrap1(void(clsWithFunc::*f)(), clsWithFunc& obj) {
-		mf = [f, obj]{return (obj.*f)();};
+	void wrap1(void(clsWithFunc::*f)(), clsWithFunc* obj) {
+		mf = [&]{return (*obj.*f)();};
 	}
 	void execute() {
 		return mf();
@@ -120,9 +120,9 @@ void voidFunc() {cout << "voidFunc" << endl;}
 void testLambdaByRef() {
 	lambdaSaver obj1;
 	clsWithFunc funcObj;
-	obj1.wrap(&clsWithFunc::func, funcObj);
-	obj1.execute();
-	obj1.wrap1(&clsWithFunc::func, funcObj);
+	//obj1.wrap(&clsWithFunc::func, &funcObj);
+	//obj1.execute();
+	obj1.wrap(&clsWithFunc::func, &funcObj);
 	obj1.execute();
 }
 /////////
