@@ -70,11 +70,13 @@ FUNCTION_TRAITS(const volatile)
 
 ////func obj
 template<typename Callable>
-struct function_traits : function_traits<decltype(&Callable::operator())> {};
+struct function_traits : function_traits<decltype(&Callable::operator())> {};//Callable::operator() is not a func call, just a mem-func
+
 //////////////
 template<typename Function>
 typename function_traits<Function>::stl_function_type to_funcion(const Function& lambda) {
 	return static_cast<function_traits<Function>::stl_function_type>(lambda);
+	//Function<==>Ret(Args...),Ret(Args...) standsfor all funcs
 }
 
 template<typename Function>
