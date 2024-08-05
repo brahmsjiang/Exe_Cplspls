@@ -107,7 +107,7 @@ struct lambdaSaver
 {
 	std::function<void()> mf;
 	void wrap(void(clsWithFunc::*f)(), clsWithFunc* obj) {
-		mf = [obj1=obj, f1=f]{return (*obj1.*f1)();};
+		mf = [=]{return (*obj.*f)();};
 	}
 	void wrap1(void(clsWithFunc::*f)(), clsWithFunc* obj) {
 		mf = [&]{return (*obj.*f)();};
