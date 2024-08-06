@@ -72,7 +72,7 @@ FUNCTION_TRAITS(const volatile)
 template<typename Callable>
 struct function_traits : function_traits<decltype(&Callable::operator())> {};//Callable::operator() is not a func call, just a mem-func
 
-//////////////
+////////////
 template<typename Function>
 typename function_traits<Function>::stl_function_type to_funcion(const Function& lambda) {
 	return static_cast<function_traits<Function>::stl_function_type>(lambda);
@@ -88,7 +88,43 @@ template<typename Function>
 typename function_traits<Function>::pointer to_function_pointer(const Function& lambda) {
 	return static_cast<typename function_traits<Function>::pointer>(lambda);
 }
-//////////////
+////////////
+template<typename F>
+void Attach(const string& strTopic, const F& f) {
+	auto func = to_funcion(f);
+	Add(strTopic, std::move(func));
+}
+template<class C, class... Args, class P>
+void Attach(const string& strTopic, void(C::*f)(Args...) const, const P& p) {
+	std::function<void(Args...)> func = [&p, f](Args... args){ return (*p.*f)(std::forward<Args>(args)...); };
+	Add(strTopic, std::move(func));
+}
+template<typename F>
+void Add(const string& strTopic, F&& f) {
+	string strkey = strTopic + typeid(F).name();
+	m_map.emplace(std::move(strKey), f);
+}
+
+template<typename R, typename... Args>
+void SendReq(Args&&... args, const string& strTopic = "") {
+	using function_type = std::function<R(Args...)>;
+	string strMsgType = strTopic + typeid(function_type).name();
+	auto range = m_map.equal_range(strMsgType);
+
+	//ret val: pair(the range you wanted)
+	//auto range = map.equal_range(1);
+    //for (auto it = range.first; it != range.second; ++it)
+    //    std::cout << it->first << ' ' << it->second << '\n';
+	// it->first --> key, it->second --> value
+	for (auto it = range.first; it != range.second; ++it) {
+		auto f = it->second.AnyCast<function_type>();
+		f(std::forward<Args>(args)...);
+	}
+}
+
+//End standard code
+
+
 
 template <typename Ret, typename... Args>
 struct templete_using
