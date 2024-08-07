@@ -89,42 +89,60 @@ typename function_traits<Function>::pointer to_function_pointer(const Function& 
 	return static_cast<typename function_traits<Function>::pointer>(lambda);
 }
 ////////////
-template<typename F>
-void Attach(const string& strTopic, const F& f) {
-	auto func = to_funcion(f);
-	Add(strTopic, std::move(func));
-}
-template<class C, class... Args, class P>
-void Attach(const string& strTopic, void(C::*f)(Args...) const, const P& p) {
-	std::function<void(Args...)> func = [&p, f](Args... args){ return (*p.*f)(std::forward<Args>(args)...); };
-	Add(strTopic, std::move(func));
-}
-template<typename F>
-void Add(const string& strTopic, F&& f) {
-	string strkey = strTopic + typeid(F).name();
-	m_map.emplace(std::move(strKey), f);
-}
-
-template<typename R, typename... Args>
-void SendReq(Args&&... args, const string& strTopic = "") {
-	using function_type = std::function<R(Args...)>;
-	string strMsgType = strTopic + typeid(function_type).name();
-	auto range = m_map.equal_range(strMsgType);
-
-	//ret val: pair(the range you wanted)
-	//auto range = map.equal_range(1);
-    //for (auto it = range.first; it != range.second; ++it)
-    //    std::cout << it->first << ' ' << it->second << '\n';
-	// it->first --> key, it->second --> value
-	for (auto it = range.first; it != range.second; ++it) {
-		auto f = it->second.AnyCast<function_type>();
-		f(std::forward<Args>(args)...);
+class MessageBus: NonCopyable
+{
+public:
+	//register msg
+	template<typename F>
+	void Attach(F&& f, const string& strTopic = "") {
+		auto func = to_funcion(std::forward<F>(f));
+		Add(strTopic, std::move(func));
 	}
-}
-
+	//send msg
+	template<typename R>
+	void SendReq(const string& strTopic = "") {
+		using function_type = std::function<R()>;
+		string strMsgType = strTopic + typeid(function_type).name();
+		auto range = m_map.equal_range(strMsgType);
+		//ret val: pair(the range you wanted)
+		//auto range = map.equal_range(1);
+		//for (auto it = range.first; it != range.second; ++it)
+		//    std::cout << it->first << ' ' << it->second << '\n';
+		// it->first --> key, it->second --> value
+		for (Iterator it = range.first; it != range.second; ++it) {
+			auto f = it->second.AnyCast<function_type>();
+			f();
+		}
+	}
+	template<typename R, typename... Args>
+	void SendReq(Args&&... args, const string& strTopic = "") {
+		using function_type = std::function<R(Args...)>;
+		string strMsgType = strTopic + typeid(function_type).name();
+		auto range = m_map.equal_range(strMsgType);
+		for (Iterator it = range.first; it != range.second; ++it) {
+			auto f = it->second.AnyCast<function_type>();
+			f(std::forward<Args>(args)...);
+		}
+	}
+	//unregister msg
+	template<typename R, typename... Args>
+	void Remove(const string& strTopic = "") {
+		using function_type = std::function<R(Args...)>;
+		string strMsgType = strTopic + typeid(function_type).name();
+		auto range = m_map.equal_range(strMsgType);
+		m_map.erase(range.first, range.second);
+	}
+private:
+	template<typename F>
+	void Add(const string& strTopic, F&& f) {
+		string strMsgType = strTopic + typeid(F).name();
+		m_map.emplace(std::move(strMsgType), std::forward<F>(f));
+	}
+private:
+	std::multimap<string, Any> m_map;
+	using Iterator = std::multimap<string, Any>::iterator;
+};
 //End standard code
-
-
 
 template <typename Ret, typename... Args>
 struct templete_using
@@ -192,6 +210,33 @@ void test0() {
 	cout << pp(12) << endl; // (*pp)(12) is the same
 }
 
+void testMsgBus() {
+	MessageBus bus;
+	bus.Attach([](int a){cout << "no reference " << a << endl;});
+	bus.Attach([](int&& a){cout << "rvalue reference " << a << endl;});
+	bus.Attach([](const int& a){cout << "const lvalue reference " << a << endl;});
+	bus.Attach([](int a){cout << "no reference has return value and key" << a << endl; return a;}, "a");
+
+	int i = 2;
+	bus.SendReq<void, int>(2);
+	bus.SendReq<int, int>(2, "a");
+	bus.SendReq<void, int&>(i);
+	bus.SendReq<void, const int&>(2);
+	bus.SendReq<void, int&&>(2);
+
+	bus.Remove<void, int>();
+	bus.Remove<int, int>("a");
+	bus.Remove<void, int&>();
+	bus.Remove<void, const int&>();
+	bus.Remove<void, int&&>();
+
+	bus.SendReq<void, int>(2);
+	bus.SendReq<int, int>(2, "a");
+	bus.SendReq<void, int&>(i);
+	bus.SendReq<void, const int&>(2);
+	bus.SendReq<void, int&&>(2);
+}
+
 int main(int argc, const char * argv[]) {
 	testLambdaByRef();
 	cout << "/////////////////////" << endl;
@@ -199,8 +244,26 @@ int main(int argc, const char * argv[]) {
 	cout << "/////////////////////" << endl;
 	test0();
 	cout << "/////////////////////" << endl;
-
+	testMsgBus();
 	cout << "/////////////////////" << endl;
 
 	return 0;
 }
+
+
+/*
+void Show(int i) {
+	Console.WriteLine("Show {0}", i);
+}
+void ShowCode(int code) {
+	Console.WriteLine("ShowCode {0}", code);
+}
+public delegate void ShowHandler(int param);	//declear delegate
+public event ShowHandler ShowEvent;				//declear event
+ShowEvent += Show;								//register func
+ShowEvent += ShowCode;							//register func
+ShowEvent(2);									//broadcast
+
+public delegate void ShowMsgHandler(int param);	//declear delegate
+public event ShowMsgHandler ShowMsgEvent;		//declear event
+*/
