@@ -210,12 +210,73 @@ void test0() {
 	cout << pp(12) << endl; // (*pp)(12) is the same
 }
 
+/////////
+MessageBus g_bus;
+const string Topic = "Drive";
+const string CallBackTopic = "DriveOk";
+struct Subject
+{	
+	Subject() {
+		g_bus.Attach([this]{DriveOk();}, CallBackTopic);
+	}
+	void SendReq(const string& topic) {
+		g_bus.SendReq<void, int>(50, topic);
+	}
+	void DriveOk() {
+		cout << "drive ok" << endl;
+	}
+};
+struct Car
+{
+	Car() {
+		g_bus.Attach([this](int speed){Drive(speed);}, Topic);
+	}
+	void Drive(int speed) {
+		cout << "Car drive " << speed << endl;
+		g_bus.SendReq<void>(CallBackTopic);
+	}
+};
+struct Bus
+{
+	Bus() {
+		g_bus.Attach([this](int speed){Drive(speed);});
+	}
+	void Drive(int speed) {
+		cout << "Bus drive " << speed << endl;
+		g_bus.SendReq<void>(CallBackTopic);
+	}
+};
+struct Trunk
+{
+	Trunk() {
+		g_bus.Attach([this](int speed){Drive(speed);});
+	}
+	void Drive(int speed) {
+		cout << "Trunk drive " << speed << endl;
+		g_bus.SendReq<void>(CallBackTopic);
+	}
+};
+void TestBus() {
+	Subject subject;
+	Car car;
+	Bus bus;
+	Trunk trunk;
+	subject.SendReq(Topic);
+	cout << "--------" << endl;
+	subject.SendReq("");
+	cout << "--------" << endl;
+	g_bus.Remove<void, int>(Topic);
+	subject.SendReq(Topic);
+	cout << "--------" << endl;
+	subject.SendReq("");
+}
+
 void testMsgBus() {
 	MessageBus bus;
 	bus.Attach([](int a){cout << "no reference " << a << endl;});
 	bus.Attach([](int&& a){cout << "rvalue reference " << a << endl;});
 	bus.Attach([](const int& a){cout << "const lvalue reference " << a << endl;});
-	bus.Attach([](int a){cout << "no reference has return value and key" << a << endl; return a;}, "a");
+	bus.Attach([](int a){cout << "no reference has return value " << a << endl; return a;}, "a");
 
 	int i = 2;
 	bus.SendReq<void, int>(2);
@@ -236,6 +297,7 @@ void testMsgBus() {
 	bus.SendReq<void, const int&>(2);
 	bus.SendReq<void, int&&>(2);
 }
+/////////
 
 int main(int argc, const char * argv[]) {
 	testLambdaByRef();
@@ -246,6 +308,7 @@ int main(int argc, const char * argv[]) {
 	cout << "/////////////////////" << endl;
 	testMsgBus();
 	cout << "/////////////////////" << endl;
+	TestBus();
 
 	return 0;
 }
