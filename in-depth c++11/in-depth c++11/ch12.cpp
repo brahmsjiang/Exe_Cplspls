@@ -312,21 +312,3 @@ int main(int argc, const char * argv[]) {
 
 	return 0;
 }
-
-
-/*
-void Show(int i) {
-	Console.WriteLine("Show {0}", i);
-}
-void ShowCode(int code) {
-	Console.WriteLine("ShowCode {0}", code);
-}
-public delegate void ShowHandler(int param);	//declear delegate
-public event ShowHandler ShowEvent;				//declear event
-ShowEvent += Show;								//register func
-ShowEvent += ShowCode;							//register func
-ShowEvent(2);									//broadcast
-
-public delegate void ShowMsgHandler(int param);	//declear delegate
-public event ShowMsgHandler ShowMsgEvent;		//declear event
-*/
