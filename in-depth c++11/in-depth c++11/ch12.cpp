@@ -76,7 +76,7 @@ struct function_traits : function_traits<decltype(&Callable::operator())> {};//C
 template<typename Function>
 typename function_traits<Function>::stl_function_type to_funcion(const Function& lambda) {
 	return static_cast<function_traits<Function>::stl_function_type>(lambda);
-	//Function<==>Ret(Args...),Ret(Args...) standsfor all funcs
+	//Function<==>Ret(Args...), Ret(Args...) standsfor all funcs
 }
 
 template<typename Function>
@@ -176,7 +176,7 @@ void voidFunc() {cout << "voidFunc" << endl;}
 void testLambdaByRef() {
 	lambdaSaver obj1;
 	clsWithFunc funcObj;
-	//obj1.wrap(&clsWithFunc::func, &funcObj);
+	//obj1.wrap1(&clsWithFunc::func, &funcObj);	//crash
 	//obj1.execute();
 	obj1.wrap(&clsWithFunc::func, &funcObj);
 	obj1.execute();

@@ -1,0 +1,34 @@
+
+
+
+
+
+
+	//register msg
+	template<typename F>
+	void Attach(F&& f, const string& strTopic = "") {
+		auto func = to_funcion(std::forward<F>(f));
+		Add(strTopic, std::move(func));
+	}
+	template<typename F>
+	void Add(const string& strTopic, F&& f) {
+		string strMsgType = strTopic + typeid(F).name();
+		m_map.emplace(std::move(strMsgType), std::forward<F>(f));
+	}
+	--------
+	MessageBus bus;
+	bus.Attach([](int a){cout << "no reference " << a << endl;});
+	bus.Attach([](int&& a){cout << "rvalue reference " << a << endl;});
+	bus.Attach([](const int& a){cout << "const lvalue reference " << a << endl;});
+	bus.Attach([](int a){cout << "no reference has return value " << a << endl; return a;}, "a");
+
+	int i = 2;
+	bus.SendReq<void, int>(2);
+	bus.SendReq<int, int>(2, "a");
+	bus.SendReq<void, int&>(i);
+	bus.SendReq<void, const int&>(2);
+	bus.SendReq<void, int&&>(2);
+	
+	========
+	注册：topic(can be ""), functionType(Ret(Args...))   <==key: strTopic+typeid(F).name(), val: std::forward<F>(f)
+	发送信息：functionType(Ret(Args...)), topic(can be ""), args...
