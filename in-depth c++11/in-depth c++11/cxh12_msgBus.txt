@@ -1,10 +1,7 @@
 
 
-
-
-
-
-	//register msg
+*****depth in C++11 sysBus:
+	//register bus
 	template<typename F>
 	void Attach(F&& f, const string& strTopic = "") {
 		auto func = to_funcion(std::forward<F>(f));
@@ -15,20 +12,64 @@
 		string strMsgType = strTopic + typeid(F).name();
 		m_map.emplace(std::move(strMsgType), std::forward<F>(f));
 	}
+	std::multimap<string, Any> m_map;
 	--------
 	MessageBus bus;
-	bus.Attach([](int a){cout << "no reference " << a << endl;});
-	bus.Attach([](int&& a){cout << "rvalue reference " << a << endl;});
-	bus.Attach([](const int& a){cout << "const lvalue reference " << a << endl;});
 	bus.Attach([](int a){cout << "no reference has return value " << a << endl; return a;}, "a");
-
-	int i = 2;
-	bus.SendReq<void, int>(2);
-	bus.SendReq<int, int>(2, "a");
-	bus.SendReq<void, int&>(i);
-	bus.SendReq<void, const int&>(2);
-	bus.SendReq<void, int&&>(2);
 	
+	//send msg
+	bus.SendReq<int, int>(2, "a");
 	========
-	注册：topic(can be ""), functionType(Ret(Args...))   <==key: strTopic+typeid(F).name(), val: std::forward<F>(f)
-	发送信息：functionType(Ret(Args...)), topic(can be ""), args...
+	注册key(topic+funcStr)+val(func): key: strTopic+typeid(F).name(), val: std::forward<F>(f)
+	发送key(topic+funcStr)+args：key: strTopic+typeid(F).name(), args...
+	接受key: get val from m_map directly-->std::forward<F>(f)-->cast to func-->call func with args
+
+*****jphone(cisco) msgQueueMgr:
+	//register bus
+	public InterfaceProxy createProxy (
+	    final MessageSink sink, final MessageFamily family ) {
+	    InterfaceProxy proxy = family.createProxy ( queue );
+	    proxyMap.put ( proxy, sink );
+	    return proxy;
+	}
+	Hashtable<InterfaceProxy, MessageSink> proxyMap;
+	--------
+	public interface IGestureListener extends Interface {
+	    public final static MessageFamily FAMILY = new MessageFamily() {
+	        ......
+	        public InterfaceProxy createProxy(final MessageSink sink) {
+	            return new Proxy(sink);															<---the proxy's MessageSink, it can be itself or a MessageQueueManager
+	        }
+	    };
+	
+	    public void processGestureEvent(final String source, final int area, final int type); <---like c++ SendReq, make it be impl
+	
+	    public final static class Proxy extends InterfaceProxy implements IGestureListener {
+					......
+	        public void processGestureEvent(final String source, final int area, final int type) {
+	            ParamMessage param = new ParamMessage(FAMILY, this/proxy, ID_xxx);
+	            getSink().sinkMessage( param );
+	        }
+	    }
+	
+	    public final static class Dispatcher implements MessageSink {
+	        private final IGestureListener listener;								 <---the Dispatcher's listener, do something else
+	        public Dispatcher(final IGestureListener listener) {
+	            this.listener = listener;
+	        }
+	        public void sinkMessage ( Message message ) {
+	            if ( message.getFamily ().getID () == FAMILY.getID() ) {
+	                final ParamMessage pm = (ParamMessage) message;
+	                listener.processGestureEvent( (String) pm.getParam1(), (int) pm.getParam2(), (int) pm.getParam3() );
+	            }
+	        }
+	    }
+	}
+	gestureListener = (IGestureListener) getQueueManager().createProxy(new IGestureListener.Dispatcher(listener),IGestureListener.FAMILY);
+
+	//send msg
+	getInputManager().getGestureListener().processGestureEvent(source, area, type);
+	========
+	注册key(InterfaceProxy cls)+val(MessageSink)：key: Proxy with func createProxy & procxxxEvent, val: Dispatcher with func sinkMessage
+	发送key(InterfaceProxy cls)+args：key: ParamMessage(family, ID, source(the above Proxy))-->msgQueueMgr get source-->Proxy, args: ParamMessage(source..., par1, par2, par3...)
+	接受key: msgQueueMgr find & call Dispatcher's sinkMessage-->Dispatcher's sinkMessage get args from ParamMessage-->Dispatcher's listener do something else with args
