@@ -7,7 +7,8 @@ using namespace std;
 class LRU {
 public:
     struct Node {
-        Node(int key = 0, int value = 0) : m_key(key), m_value(value) {}
+        Node(int key = 0, int value = 0)
+        : m_key(key), m_value(value), prev(nullptr), next(nullptr) {}
         int m_key;
         int m_value;
         Node* prev;
@@ -19,6 +20,10 @@ public:
         tail = new Node;
         tail->prev = head;//tail point to head
         head->next = tail;//head point to tail
+    }
+    ~LRU() {
+        deleteNode(head);
+        deleteNode(tail);
     }
     int get(int key) {
         if (m_map.find(key) == m_map.end())
@@ -39,6 +44,7 @@ public:
                 Node* tailPrev = tail->prev;
                 removeNode(tailPrev);
                 m_map.erase(tailPrev->m_key);
+                deleteNode(tailPrev);
             }
             Node* newNode = new Node(key, value);
             //m_map.insert(std::make_pair(key, newNode));
@@ -47,8 +53,16 @@ public:
         }
     }
     void removeNode(Node* node) {
+        if (node == nullptr)
+            return;
         node->prev->next = node->next;
         node->next->prev = node->prev;
+    }
+    void deleteNode(Node* node) {
+        if (node == nullptr)
+            return;
+        delete node;
+        node = nullptr;
     }
     void addToHead(Node* node) {
         node->next = head->next;//before
